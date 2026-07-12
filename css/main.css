@@ -345,6 +345,8 @@ body {
     min-height: 48px;
 }
 .result-text {
+    flex: 1;
+    text-align: center;
     font-size: 1.05rem;
     font-weight: 600;
     color: var(--text-accent);
@@ -402,6 +404,7 @@ body {
 .scale-presets, .imperial-scales {
     display: flex;
     flex-wrap: wrap;
+    justify-content: center;
     gap: 6px;
     margin-bottom: 16px;
 }
