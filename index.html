@@ -90,7 +90,9 @@
                                 <option value="mi">Miles (mi)</option>
                             </select>
                         </div>
-                        <button class="btn-swap" data-from="length-from-val" data-to="length-to-val" data-from-unit="length-from-unit" data-to-unit="length-to-unit">⇄</button>
+                        <button class="btn-swap" data-from="length-from-val" data-to="length-to-val" data-from-unit="length-from-unit" data-to-unit="length-to-unit" aria-label="Swap">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3l4 4-4 4"/><path d="M3 7h18"/><path d="M7 21l-4-4 4-4"/><path d="M21 17H3"/></svg>
+                        </button>
                         <div class="input-group">
                             <label>To</label>
                             <input type="number" class="input-value" id="length-to-val" placeholder="Result" step="any" readonly>
