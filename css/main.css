@@ -21,6 +21,7 @@ body {
     transition: background 0.3s, color 0.3s;
     overflow: hidden;
     height: 100vh;
+    height: 100dvh;
 }
 
 /* Scrollbar */
@@ -107,6 +108,7 @@ body {
 .app-layout {
     display: flex;
     height: calc(100vh - 56px);
+    height: calc(100dvh - 56px);
 }
 
 /* ============================================
@@ -118,13 +120,14 @@ body {
     left: -260px;
     width: 260px;
     height: calc(100vh - 56px);
+    height: calc(100dvh - 56px);
     z-index: 90;
     box-shadow: var(--shadow-lg);
     background: var(--bg-sidebar);
     border-right: 1px solid var(--border-color);
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
-    padding: 12px 0;
+    padding: 12px 0 calc(12px + env(safe-area-inset-bottom));
     transition: all 0.3s;
 }
 
@@ -177,6 +180,7 @@ body {
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
     padding: 24px;
+    padding-bottom: calc(24px + env(safe-area-inset-bottom));
 }
 
 .section {
