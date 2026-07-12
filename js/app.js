@@ -44,6 +44,13 @@ document.addEventListener('DOMContentLoaded', () => {
     initConstructionConverters();
     initReferenceTables();
     initAreaToDim();
+    initTriangleSolver();
+    initPerimeterCalc();
+    initStairCalc();
+    initTileCalc();
+    initBrickCalc();
+    initPaintCalc();
+    initVolWeightCalc();
     initSwapButtons();
     document.getElementById('clearHistory')?.addEventListener('click', clearHistory);
 });

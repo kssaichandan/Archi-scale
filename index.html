@@ -37,6 +37,7 @@
                     <button class="nav-item" data-section="pressure">Pressure</button>
                     <button class="nav-item" data-section="density">Density</button>
                     <button class="nav-item" data-section="angle">Angle</button>
+                    <button class="nav-item" data-section="vol-weight-calc">Volume to Weight</button>
                 </details>
                 <details class="nav-category">
                     <summary class="nav-heading">🏗️ Scale Tools</summary>
@@ -52,10 +53,16 @@
                     <button class="nav-item" data-section="board-feet">Board Feet</button>
                     <button class="nav-item" data-section="roofing">Roofing Squares</button>
                     <button class="nav-item" data-section="concrete">Concrete Volume</button>
+                    <button class="nav-item" data-section="stair-calc">Stair Calculator</button>
+                    <button class="nav-item" data-section="tile-calc">Tile Estimator</button>
+                    <button class="nav-item" data-section="brick-calc">Brick Calculator</button>
+                    <button class="nav-item" data-section="paint-calc">Paint Estimator</button>
                 </details>
                 <details class="nav-category">
                     <summary class="nav-heading">📐 Geometry</summary>
                     <button class="nav-item" data-section="area-to-dim">Area to Dimensions</button>
+                    <button class="nav-item" data-section="triangle-solver">Triangle Solver</button>
+                    <button class="nav-item" data-section="perimeter-calc">Perimeter Calculator</button>
                 </details>
                 <details class="nav-category">
                     <summary class="nav-heading">📖 Reference</summary>
@@ -962,8 +969,295 @@
                 </div>
             </section>
 
+            <!-- ===== TRIANGLE SOLVER ===== -->
+            <section class="section" id="section-triangle-solver">
+                <div class="section-header">
+                    <h2>Right Triangle / Slope Solver</h2>
+                    <button class="btn-star" data-fav="triangle-solver">☆</button>
+                </div>
+                <div class="converter-card">
+                    <p class="tool-description">Enter any two values to calculate the rest of the right triangle.</p>
+                    <div class="input-row-3">
+                        <div class="input-group">
+                            <label>Base (Run)</label>
+                            <input type="number" class="input-value" id="triangle-base" placeholder="Enter base" step="any">
+                        </div>
+                        <div class="input-group">
+                            <label>Height (Rise)</label>
+                            <input type="number" class="input-value" id="triangle-height" placeholder="Enter height" step="any">
+                        </div>
+                        <div class="input-group">
+                            <label>Hypotenuse</label>
+                            <input type="number" class="input-value" id="triangle-hyp" placeholder="Enter hypotenuse" step="any">
+                        </div>
+                    </div>
+                    <div class="input-row-3" style="margin-top: 15px;">
+                        <div class="input-group">
+                            <label>Angle (Degrees)</label>
+                            <input type="number" class="input-value" id="triangle-angle" placeholder="Enter angle" step="any">
+                        </div>
+                        <div class="input-group">
+                            <label>Unit (Optional)</label>
+                            <select class="input-unit" id="triangle-unit">
+                                <option value="m">Meters (m)</option>
+                                <option value="cm">Centimeters (cm)</option>
+                                <option value="mm">Millimeters (mm)</option>
+                                <option value="ft">Feet (ft)</option>
+                                <option value="in">Inches (in)</option>
+                            </select>
+                        </div>
+                        <button class="btn-danger" id="triangle-clear" style="align-self: flex-end; height: 42px;">Clear All</button>
+                    </div>
+                    <div class="result-display" id="triangle-result" style="margin-top: 15px; height: auto; padding: 15px; flex-direction: column; align-items: flex-start; text-align: left;">
+                        <span class="result-text">Enter at least 2 values to calculate</span>
+                    </div>
+                </div>
+            </section>
 
-            <!-- ===== HISTORY ===== -->
+            <!-- ===== PERIMETER CALCULATOR ===== -->
+            <section class="section" id="section-perimeter-calc">
+                <div class="section-header">
+                    <h2>Perimeter Calculator</h2>
+                    <button class="btn-star" data-fav="perimeter-calc">☆</button>
+                </div>
+                <div class="converter-card">
+                    <div class="converter-row">
+                        <div class="input-group">
+                            <label>Shape</label>
+                            <select class="input-unit" id="perimeter-shape" style="width: 100%;">
+                                <option value="circle" selected>Circle</option>
+                                <option value="square">Square</option>
+                                <option value="rectangle">Rectangle</option>
+                                <option value="triangle">Triangle (Equilateral)</option>
+                            </select>
+                        </div>
+                        <div class="input-group">
+                            <label id="perimeter-l1">Radius / Side</label>
+                            <input type="number" class="input-value" id="perimeter-dim1" placeholder="Enter value" step="any">
+                        </div>
+                        <div class="input-group" id="perimeter-dim2-group" style="display: none;">
+                            <label id="perimeter-l2">Secondary Dimension</label>
+                            <input type="number" class="input-value" id="perimeter-dim2" placeholder="Enter value" step="any">
+                        </div>
+                    </div>
+                    <div class="result-display" id="perimeter-result" style="margin-top: 15px;">
+                        <span class="result-text">Enter dimensions to calculate perimeter</span>
+                        <button class="btn-copy" title="Copy result">📋</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ===== STAIR CALCULATOR ===== -->
+            <section class="section" id="section-stair-calc">
+                <div class="section-header">
+                    <h2>Stair Calculator</h2>
+                    <button class="btn-star" data-fav="stair-calc">☆</button>
+                </div>
+                <div class="converter-card">
+                    <p class="tool-description">Enter the total rise (height between floors) to calculate standard stair dimensions.</p>
+                    <div class="converter-row">
+                        <div class="input-group">
+                            <label>Total Rise</label>
+                            <input type="number" class="input-value" id="stair-rise" placeholder="e.g. 2600" step="any">
+                        </div>
+                        <div class="input-group">
+                            <label>Unit</label>
+                            <select class="input-unit" id="stair-unit">
+                                <option value="mm" selected>Millimeters (mm)</option>
+                                <option value="cm">Centimeters (cm)</option>
+                                <option value="m">Meters (m)</option>
+                                <option value="in">Inches (in)</option>
+                            </select>
+                        </div>
+                        <div class="input-group">
+                            <label>Target Riser Height</label>
+                            <input type="number" class="input-value" id="stair-target-riser" placeholder="e.g. 180" step="any" value="180">
+                        </div>
+                    </div>
+                    <div class="result-display" id="stair-result" style="margin-top: 15px; flex-direction: column; align-items: flex-start; text-align: left; height: auto; padding: 15px;">
+                        <span class="result-text" id="stair-result-text">Enter total rise to calculate stairs</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ===== TILE ESTIMATOR ===== -->
+            <section class="section" id="section-tile-calc">
+                <div class="section-header">
+                    <h2>Tile & Flooring Estimator</h2>
+                    <button class="btn-star" data-fav="tile-calc">☆</button>
+                </div>
+                <div class="converter-card">
+                    <div class="input-row-3">
+                        <div class="input-group">
+                            <label>Area to Cover (m²)</label>
+                            <input type="number" class="input-value" id="tile-area" placeholder="e.g. 20" step="any">
+                        </div>
+                        <div class="input-group">
+                            <label>Tile Width (mm)</label>
+                            <input type="number" class="input-value" id="tile-width" placeholder="e.g. 600" step="any">
+                        </div>
+                        <div class="input-group">
+                            <label>Tile Length (mm)</label>
+                            <input type="number" class="input-value" id="tile-length" placeholder="e.g. 600" step="any">
+                        </div>
+                    </div>
+                    <div class="input-row-3" style="margin-top: 15px;">
+                        <div class="input-group">
+                            <label>Grout Gap (mm)</label>
+                            <input type="number" class="input-value" id="tile-grout" placeholder="e.g. 2" value="2" step="any">
+                        </div>
+                        <div class="input-group">
+                            <label>Waste Margin (%)</label>
+                            <input type="number" class="input-value" id="tile-waste" placeholder="e.g. 10" value="10" step="any">
+                        </div>
+                        <div class="input-group">
+                            <label>Tiles per Box (Optional)</label>
+                            <input type="number" class="input-value" id="tile-box" placeholder="e.g. 4" step="any">
+                        </div>
+                    </div>
+                    <div class="result-display" id="tile-result" style="margin-top: 15px; height: auto; padding: 15px; text-align: left; align-items: flex-start;">
+                        <span class="result-text">Enter room area and tile dimensions</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ===== BRICK CALCULATOR ===== -->
+            <section class="section" id="section-brick-calc">
+                <div class="section-header">
+                    <h2>Brick & Block Calculator</h2>
+                    <button class="btn-star" data-fav="brick-calc">☆</button>
+                </div>
+                <div class="converter-card">
+                    <div class="input-row-3">
+                        <div class="input-group">
+                            <label>Wall Area (m²)</label>
+                            <input type="number" class="input-value" id="brick-area" placeholder="e.g. 15" step="any">
+                        </div>
+                        <div class="input-group">
+                            <label>Brick Type</label>
+                            <select class="input-unit" id="brick-type" style="width: 100%;">
+                                <option value="standard" selected>Standard Brick (215x65mm)</option>
+                                <option value="block">Concrete Block (440x215mm)</option>
+                                <option value="custom">Custom (L x H)</option>
+                            </select>
+                        </div>
+                        <div class="input-group" id="brick-custom-group" style="display: none;">
+                            <label>Custom L × H (mm)</label>
+                            <input type="text" class="input-value" id="brick-custom-dim" placeholder="e.g. 215x65">
+                        </div>
+                    </div>
+                    <div class="input-row-3" style="margin-top: 15px;">
+                        <div class="input-group">
+                            <label>Mortar Joint (mm)</label>
+                            <input type="number" class="input-value" id="brick-mortar" placeholder="e.g. 10" value="10" step="any">
+                        </div>
+                        <div class="input-group">
+                            <label>Waste Margin (%)</label>
+                            <input type="number" class="input-value" id="brick-waste" placeholder="e.g. 5" value="5" step="any">
+                        </div>
+                        <div class="input-group">
+                            <label>Wall Thickness Type</label>
+                            <select class="input-unit" id="brick-wall-type">
+                                <option value="half" selected>Half Brick (Single Skin)</option>
+                                <option value="full">Full Brick (Double Skin)</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="result-display" id="brick-result" style="margin-top: 15px; flex-direction: column; align-items: flex-start; text-align: left; height: auto; padding: 15px;">
+                        <span class="result-text">Enter wall area and select brick type</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ===== PAINT ESTIMATOR ===== -->
+            <section class="section" id="section-paint-calc">
+                <div class="section-header">
+                    <h2>Paint Estimator</h2>
+                    <button class="btn-star" data-fav="paint-calc">☆</button>
+                </div>
+                <div class="converter-card">
+                    <div class="input-row-3">
+                        <div class="input-group">
+                            <label>Total Wall Area</label>
+                            <input type="number" class="input-value" id="paint-area" placeholder="e.g. 50" step="any">
+                        </div>
+                        <div class="input-group">
+                            <label>Area Unit</label>
+                            <select class="input-unit" id="paint-unit">
+                                <option value="m2" selected>m²</option>
+                                <option value="ft2">ft²</option>
+                            </select>
+                        </div>
+                        <div class="input-group">
+                            <label>Subtract Openings Area</label>
+                            <input type="number" class="input-value" id="paint-subtract" placeholder="e.g. 5" value="0" step="any">
+                        </div>
+                    </div>
+                    <div class="input-row-3" style="margin-top: 15px;">
+                        <div class="input-group">
+                            <label>Number of Coats</label>
+                            <input type="number" class="input-value" id="paint-coats" placeholder="e.g. 2" value="2" step="any">
+                        </div>
+                        <div class="input-group" style="width: 100%;">
+                            <label>Coverage (per Liter/Gallon)</label>
+                            <input type="number" class="input-value" id="paint-coverage" placeholder="e.g. 10 (m²/L)" value="10" step="any" style="width: 100%;">
+                        </div>
+                        <div class="input-group">
+                            <label>Volume Unit Output</label>
+                            <select class="input-unit" id="paint-out-unit">
+                                <option value="L" selected>Liters</option>
+                                <option value="gal">Gallons</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="result-display" id="paint-result" style="margin-top: 15px;">
+                        <span class="result-text">Enter wall area to estimate paint</span>
+                        <button class="btn-copy" title="Copy result">📋</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ===== VOLUME TO WEIGHT ===== -->
+            <section class="section" id="section-vol-weight-calc">
+                <div class="section-header">
+                    <h2>Volume to Weight Converter</h2>
+                    <button class="btn-star" data-fav="vol-weight-calc">☆</button>
+                </div>
+                <div class="converter-card">
+                    <div class="converter-row">
+                        <div class="input-group">
+                            <label>Volume</label>
+                            <input type="number" class="input-value" id="vol-weight-val" placeholder="Enter volume" step="any">
+                            <select class="input-unit" id="vol-weight-unit">
+                                <option value="m3" selected>Cubic Meters (m³)</option>
+                                <option value="L">Liters (L)</option>
+                                <option value="ft3">Cubic Feet (ft³)</option>
+                                <option value="yd3">Cubic Yards (yd³)</option>
+                            </select>
+                        </div>
+                        <div class="input-group">
+                            <label>Material</label>
+                            <select class="input-unit" id="vol-weight-material" style="width: 100%;">
+                                <option value="1000">Water (1000 kg/m³)</option>
+                                <option value="2400">Concrete (2400 kg/m³)</option>
+                                <option value="1600">Sand, dry (1600 kg/m³)</option>
+                                <option value="7850">Steel (7850 kg/m³)</option>
+                                <option value="600">Timber, softwood (600 kg/m³)</option>
+                                <option value="custom">Custom Density...</option>
+                            </select>
+                        </div>
+                        <div class="input-group" id="vol-weight-custom-group" style="display: none;">
+                            <label>Custom (kg/m³)</label>
+                            <input type="number" class="input-value" id="vol-weight-custom-val" placeholder="e.g. 1500" step="any">
+                        </div>
+                    </div>
+                    <div class="result-display" id="vol-weight-result" style="margin-top: 15px;">
+                        <span class="result-text">Enter volume and select material</span>
+                        <button class="btn-copy" title="Copy result">📋</button>
+                    </div>
+                </div>
+            </section>
+
             <section class="section" id="section-history">
                 <div class="section-header">
                     <h2>Conversion History</h2>
