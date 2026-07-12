@@ -43,6 +43,7 @@ document.addEventListener('DOMContentLoaded', () => {
     initScaleResize();
     initConstructionConverters();
     initReferenceTables();
+    initAreaToDim();
     initSwapButtons();
     document.getElementById('clearHistory')?.addEventListener('click', clearHistory);
 });
@@ -714,3 +715,88 @@ function getDetailLevel(s) {
     if (s <= 1000) return 'Low Detail';
     return 'Macro';
 }
+
+// ==========================================
+// AREA TO DIMENSIONS
+// ==========================================
+function initAreaToDim() {
+    const valInput = document.getElementById('area-to-dim-val');
+    const shapeSelect = document.getElementById('area-to-dim-shape');
+    const ratioRow = document.getElementById('area-to-dim-ratio-row');
+    const ratioInput = document.getElementById('area-to-dim-ratio');
+    
+    if (!valInput) return;
+
+    const calculate = () => {
+        const area = parseFloat(valInput.value);
+        const shape = shapeSelect.value;
+        const resultEl = document.getElementById('area-to-dim-result');
+        const unit = document.getElementById('area-to-dim-unit').options[document.getElementById('area-to-dim-unit').selectedIndex].text;
+        
+        ratioRow.style.display = shape === 'rectangle' ? 'flex' : 'none';
+
+        if (isNaN(area) || area <= 0) {
+            resultEl.querySelector('.result-text').textContent = 'Enter a valid area > 0';
+            return;
+        }
+
+        let output = '';
+        let baseUnit = unit.replace('Square ', '').replace('m²', 'm').replace('cm²', 'cm').replace('ft²', 'ft').replace('in²', 'in');
+
+        switch (shape) {
+            case 'circle': {
+                const r = Math.sqrt(area / Math.PI);
+                output = `Radius = ${fmt(r)} ${baseUnit} | Diameter = ${fmt(2 * r)} ${baseUnit}`;
+                break;
+            }
+            case 'square': {
+                const s = Math.sqrt(area);
+                output = `Side length = ${fmt(s)} ${baseUnit}`;
+                break;
+            }
+            case 'triangle': {
+                // Area of equilateral triangle = (sqrt(3)/4) * a^2
+                const a = Math.sqrt((4 * area) / Math.sqrt(3));
+                const h = (Math.sqrt(3) / 2) * a;
+                output = `Side length = ${fmt(a)} ${baseUnit} | Height = ${fmt(h)} ${baseUnit}`;
+                break;
+            }
+            case 'hexagon': {
+                // Area of regular hexagon = (3*sqrt(3)/2) * s^2
+                const s_hex = Math.sqrt((2 * area) / (3 * Math.sqrt(3)));
+                const w_hex = 2 * s_hex; // Width (corner to corner)
+                const h_hex = Math.sqrt(3) * s_hex; // Height (flat to flat)
+                output = `Side length = ${fmt(s_hex)} ${baseUnit} | Width = ${fmt(w_hex)} ${baseUnit} | Height = ${fmt(h_hex)} ${baseUnit}`;
+                break;
+            }
+            case 'rectangle': {
+                const ratioStr = ratioInput.value || '1:1';
+                let wRatio = 1, hRatio = 1;
+                if (ratioStr.includes(':')) {
+                    const parts = ratioStr.split(':');
+                    wRatio = parseFloat(parts[0]) || 1;
+                    hRatio = parseFloat(parts[1]) || 1;
+                } else {
+                    wRatio = parseFloat(ratioStr) || 1;
+                    hRatio = 1;
+                }
+                
+                // area = w * h = (wRatio * x) * (hRatio * x) = wRatio * hRatio * x^2
+                const x = Math.sqrt(area / (wRatio * hRatio));
+                const width = wRatio * x;
+                const height = hRatio * x;
+                
+                output = `Width = ${fmt(width)} ${baseUnit} | Height = ${fmt(height)} ${baseUnit}`;
+                break;
+            }
+        }
+
+        resultEl.querySelector('.result-text').textContent = output;
+    };
+
+    valInput.addEventListener('input', calculate);
+    shapeSelect.addEventListener('change', calculate);
+    ratioInput.addEventListener('input', calculate);
+    document.getElementById('area-to-dim-unit').addEventListener('change', calculate);
+}
+

@@ -54,6 +54,10 @@
                     <button class="nav-item" data-section="concrete">Concrete Volume</button>
                 </details>
                 <details class="nav-category">
+                    <summary class="nav-heading">📐 Geometry</summary>
+                    <button class="nav-item" data-section="area-to-dim">Area to Dimensions</button>
+                </details>
+                <details class="nav-category">
                     <summary class="nav-heading">📖 Reference</summary>
                     <button class="nav-item" data-section="arch-dimensions">Arch. Dimensions</button>
                     <button class="nav-item" data-section="material-densities">Material Densities</button>
@@ -914,6 +918,50 @@
                     <div class="table-container"></div>
                 </div>
             </section>
+
+            <!-- ===== AREA TO DIMENSIONS ===== -->
+            <section class="section" id="section-area-to-dim">
+                <div class="section-header">
+                    <h2>Area to Dimensions Converter</h2>
+                    <button class="btn-star" data-fav="area-to-dim">☆</button>
+                </div>
+                <div class="converter-card">
+                    <p class="tool-description">Enter an area and choose a shape to calculate its dimensions.</p>
+                    <div class="converter-row">
+                        <div class="input-group">
+                            <label>Area Value</label>
+                            <input type="number" class="input-value" id="area-to-dim-val" placeholder="e.g. 100" step="any">
+                            <select class="input-unit" id="area-to-dim-unit">
+                                <option value="m2" selected>Square Meters (m²)</option>
+                                <option value="cm2">Square Centimeters (cm²)</option>
+                                <option value="ft2">Square Feet (ft²)</option>
+                                <option value="in2">Square Inches (in²)</option>
+                            </select>
+                        </div>
+                        <div class="input-group">
+                            <label>Shape</label>
+                            <select class="input-unit" id="area-to-dim-shape" style="width: 100%;">
+                                <option value="circle" selected>Circle</option>
+                                <option value="square">Square</option>
+                                <option value="rectangle">Rectangle</option>
+                                <option value="triangle">Equilateral Triangle</option>
+                                <option value="hexagon">Regular Hexagon</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="converter-row" id="area-to-dim-ratio-row" style="display: none; margin-top: 15px;">
+                        <div class="input-group" style="width: 100%;">
+                            <label>Width to Height Ratio (e.g., 16:9, 1:2, 2)</label>
+                            <input type="text" class="input-value" id="area-to-dim-ratio" placeholder="e.g., 1:2" value="1:2" style="width: 100%;">
+                        </div>
+                    </div>
+                    <div class="result-display" id="area-to-dim-result" style="margin-top: 15px;">
+                        <span class="result-text">Enter an area to calculate dimensions</span>
+                        <button class="btn-copy" title="Copy result">📋</button>
+                    </div>
+                </div>
+            </section>
+
 
             <!-- ===== HISTORY ===== -->
             <section class="section" id="section-history">
