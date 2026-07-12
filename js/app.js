@@ -807,3 +807,427 @@ function initAreaToDim() {
     document.getElementById('area-to-dim-unit').addEventListener('change', calculate);
 }
 
+// ==========================================
+// NEW TOOLS
+// ==========================================
+
+function initTriangleSolver() {
+    const base = document.getElementById('triangle-base');
+    const height = document.getElementById('triangle-height');
+    const hyp = document.getElementById('triangle-hyp');
+    const angle = document.getElementById('triangle-angle');
+    const clear = document.getElementById('triangle-clear');
+    const result = document.getElementById('triangle-result');
+    if (!base) return;
+
+    const calculate = (e) => {
+        let b = parseFloat(base.value);
+        let h = parseFloat(height.value);
+        let hy = parseFloat(hyp.value);
+        let a = parseFloat(angle.value);
+        
+        let valid = 0;
+        if (!isNaN(b)) valid++;
+        if (!isNaN(h)) valid++;
+        if (!isNaN(hy)) valid++;
+        if (!isNaN(a)) valid++;
+
+        if (valid < 2 && e && e.target !== clear) return;
+
+        if (!isNaN(b) && !isNaN(h)) {
+            hy = Math.sqrt(b*b + h*h);
+            a = Math.atan2(h, b) * (180 / Math.PI);
+        } else if (!isNaN(b) && !isNaN(hy)) {
+            h = Math.sqrt(hy*hy - b*b);
+            a = Math.atan2(h, b) * (180 / Math.PI);
+        } else if (!isNaN(h) && !isNaN(hy)) {
+            b = Math.sqrt(hy*hy - h*h);
+            a = Math.atan2(h, b) * (180 / Math.PI);
+        } else if (!isNaN(b) && !isNaN(a)) {
+            h = b * Math.tan(a * Math.PI / 180);
+            hy = b / Math.cos(a * Math.PI / 180);
+        } else if (!isNaN(h) && !isNaN(a)) {
+            b = h / Math.tan(a * Math.PI / 180);
+            hy = h / Math.sin(a * Math.PI / 180);
+        } else if (!isNaN(hy) && !isNaN(a)) {
+            b = hy * Math.cos(a * Math.PI / 180);
+            h = hy * Math.sin(a * Math.PI / 180);
+        }
+        
+        if (valid >= 2) {
+            base.value = isNaN(b) ? '' : b.toFixed(4).replace(/\.?0+$/, '');
+            height.value = isNaN(h) ? '' : h.toFixed(4).replace(/\.?0+$/, '');
+            hyp.value = isNaN(hy) ? '' : hy.toFixed(4).replace(/\.?0+$/, '');
+            angle.value = isNaN(a) ? '' : a.toFixed(4).replace(/\.?0+$/, '');
+            
+            let pitch = h / b;
+            let slope = pitch * 100;
+            
+            result.querySelector('.result-text').innerHTML = 
+                `Base: ${fmt(b)} | Height: ${fmt(h)} | Hypotenuse: ${fmt(hy)}<br>` + 
+                `Angle: ${fmt(a)}° | Slope: ${fmt(slope)}% | Pitch: 1 in ${fmt(1/pitch)} | ${fmt(h*12/b)}:12`;
+            addHistory('Triangle Solver', `${fmt(b)}, ${fmt(h)}`, `Hyp: ${fmt(hy)}`);
+        }
+    };
+
+    [base, height, hyp, angle].forEach(el => {
+        el.addEventListener('change', calculate);
+    });
+
+    clear.addEventListener('click', () => {
+        base.value = '';
+        height.value = '';
+        hyp.value = '';
+        angle.value = '';
+        result.querySelector('.result-text').textContent = 'Enter at least 2 values to calculate';
+    });
+}
+
+function initPerimeterCalc() {
+    const shape = document.getElementById('perimeter-shape');
+    const dim1 = document.getElementById('perimeter-dim1');
+    const dim2 = document.getElementById('perimeter-dim2');
+    const dim2Group = document.getElementById('perimeter-dim2-group');
+    const unit = document.getElementById('perimeter-unit');
+    const l1 = document.getElementById('perimeter-l1');
+    const l2 = document.getElementById('perimeter-l2');
+    const result = document.getElementById('perimeter-result');
+    if (!shape) return;
+
+    const calculate = () => {
+        const s = shape.value;
+        const v1 = parseFloat(dim1.value);
+        const v2 = parseFloat(dim2.value);
+        const u = unit.value;
+        if (isNaN(v1)) return;
+
+        let p = 0;
+        let out = '';
+        
+        switch (s) {
+            case 'circle': {
+                p = 2 * Math.PI * v1;
+                out = `Circumference = ${fmt(p)} ${u}`;
+                break;
+            }
+            case 'square': {
+                p = 4 * v1;
+                out = `Perimeter = ${fmt(p)} ${u}`;
+                break;
+            }
+            case 'rectangle': {
+                if (isNaN(v2)) return;
+                p = 2 * (v1 + v2);
+                out = `Perimeter = ${fmt(p)} ${u}`;
+                break;
+            }
+            case 'triangle': {
+                p = 3 * v1;
+                out = `Perimeter = ${fmt(p)} ${u}`;
+                break;
+            }
+        }
+        
+        result.querySelector('.result-text').textContent = out;
+        addHistory('Perimeter', `${s} (${v1}${u})`, out);
+    };
+
+    shape.addEventListener('change', () => {
+        const s = shape.value;
+        if (s === 'circle') {
+            l1.textContent = 'Radius';
+            dim2Group.style.display = 'none';
+        } else if (s === 'square') {
+            l1.textContent = 'Side Length';
+            dim2Group.style.display = 'none';
+        } else if (s === 'rectangle') {
+            l1.textContent = 'Width';
+            l2.textContent = 'Height';
+            dim2Group.style.display = 'flex';
+        } else if (s === 'triangle') {
+            l1.textContent = 'Side Length';
+            dim2Group.style.display = 'none';
+        }
+        calculate();
+    });
+
+    [dim1, dim2, unit].forEach(el => {
+        el.addEventListener('input', calculate);
+        el.addEventListener('change', calculate);
+    });
+}
+
+function initStairCalc() {
+    const rise = document.getElementById('stair-rise');
+    const target = document.getElementById('stair-target-riser');
+    const unit = document.getElementById('stair-unit');
+    const result = document.getElementById('stair-result-text');
+    if (!rise) return;
+
+    const calculate = () => {
+        const totalRise = parseFloat(rise.value);
+        const targetRiser = parseFloat(target.value) || 180;
+        if (isNaN(totalRise)) return;
+
+        let m = 1;
+        if (unit.value === 'cm') m = 10;
+        else if (unit.value === 'm') m = 1000;
+        else if (unit.value === 'in') m = 25.4;
+        else if (unit.value === 'ft') m = 304.8;
+        
+        const targetRiserMM = targetRiser * m;
+        const totalRiseMM = totalRise * m;
+        let steps = Math.round(totalRiseMM / targetRiserMM);
+        if (steps < 1) steps = 1;
+        
+        const actualRiserMM = totalRiseMM / steps;
+        const treadMM = 615 - (2 * actualRiserMM);
+        
+        const actualRiserOut = actualRiserMM / m;
+        const treadOut = treadMM / m;
+        const totalRun = treadOut * (steps - 1);
+        
+        const u = unit.value;
+        
+        result.innerHTML = `
+            <strong>Number of Risers (Steps):</strong> ${steps}<br>
+            <strong>Actual Riser Height:</strong> ${fmt(actualRiserOut)} ${u}<br>
+            <strong>Recommended Tread Depth:</strong> ${fmt(treadOut)} ${u} (based on 2R+T rule)<br>
+            <strong>Total Run (Staircase Length):</strong> ${fmt(totalRun)} ${u}
+        `;
+        addHistory('Stair Calculator', `Rise: ${totalRise}${u}`, `${steps} steps`);
+    };
+
+    [rise, target, unit].forEach(el => {
+        el.addEventListener('input', calculate);
+        el.addEventListener('change', calculate);
+    });
+}
+
+function initTileCalc() {
+    const area = document.getElementById('tile-area');
+    const areaUnit = document.getElementById('tile-area-unit');
+    const width = document.getElementById('tile-width');
+    const length = document.getElementById('tile-length');
+    const dimUnit = document.getElementById('tile-dim-unit');
+    const grout = document.getElementById('tile-grout');
+    const waste = document.getElementById('tile-waste');
+    const box = document.getElementById('tile-box');
+    const result = document.getElementById('tile-result');
+    if (!area) return;
+
+    const calculate = () => {
+        const a = parseFloat(area.value);
+        const w = parseFloat(width.value);
+        const l = parseFloat(length.value);
+        const g = parseFloat(grout.value) || 0;
+        const ws = parseFloat(waste.value) || 0;
+        const b = parseFloat(box.value);
+        
+        if (isNaN(a) || isNaN(w) || isNaN(l)) return;
+        
+        let areaM2 = a;
+        if (areaUnit.value === 'cm2') areaM2 = a / 10000;
+        else if (areaUnit.value === 'mm2') areaM2 = a / 1000000;
+        else if (areaUnit.value === 'ft2') areaM2 = a * 0.092903;
+        else if (areaUnit.value === 'in2') areaM2 = a * 0.00064516;
+        
+        let m = 0.001;
+        if (dimUnit.value === 'cm') m = 0.01;
+        else if (dimUnit.value === 'm') m = 1;
+        else if (dimUnit.value === 'in') m = 0.0254;
+        else if (dimUnit.value === 'ft') m = 0.3048;
+        
+        const tileW = (w + g) * m;
+        const tileL = (l + g) * m;
+        const tileAreaM2 = tileW * tileL;
+        
+        const rawTiles = areaM2 / tileAreaM2;
+        const totalTiles = Math.ceil(rawTiles * (1 + (ws/100)));
+        
+        let out = `<strong>Total Tiles Needed:</strong> ${totalTiles} (incl. ${ws}% waste)<br>`;
+        if (!isNaN(b) && b > 0) {
+            const boxes = Math.ceil(totalTiles / b);
+            out += `<strong>Boxes Needed:</strong> ${boxes}<br>`;
+        }
+        
+        result.querySelector('.result-text').innerHTML = out;
+        addHistory('Tile Estimator', `${a}${areaUnit.value}`, `${totalTiles} tiles`);
+    };
+
+    [area, areaUnit, width, length, dimUnit, grout, waste, box].forEach(el => {
+        el.addEventListener('input', calculate);
+        el.addEventListener('change', calculate);
+    });
+}
+
+function initBrickCalc() {
+    const area = document.getElementById('brick-area');
+    const areaUnit = document.getElementById('brick-area-unit');
+    const type = document.getElementById('brick-type');
+    const customDim = document.getElementById('brick-custom-dim');
+    const customGroup = document.getElementById('brick-custom-group');
+    const mortar = document.getElementById('brick-mortar');
+    const dimUnit = document.getElementById('brick-dim-unit');
+    const waste = document.getElementById('brick-waste');
+    const wallType = document.getElementById('brick-wall-type');
+    const result = document.getElementById('brick-result');
+    if (!area) return;
+
+    const calculate = () => {
+        const a = parseFloat(area.value);
+        const t = type.value;
+        const mort = parseFloat(mortar.value) || 0;
+        const ws = parseFloat(waste.value) || 0;
+        const wt = wallType.value;
+        if (isNaN(a)) return;
+        
+        let areaM2 = a;
+        if (areaUnit.value === 'cm2') areaM2 = a / 10000;
+        else if (areaUnit.value === 'mm2') areaM2 = a / 1000000;
+        else if (areaUnit.value === 'ft2') areaM2 = a * 0.092903;
+        else if (areaUnit.value === 'in2') areaM2 = a * 0.00064516;
+        
+        let bw = 215, bh = 65;
+        let dimToMeters = 0.001; 
+        
+        if (t === 'block') { bw = 440; bh = 215; }
+        else if (t === 'custom') {
+            const parts = customDim.value.split('x');
+            if (parts.length === 2) {
+                bw = parseFloat(parts[0]) || bw;
+                bh = parseFloat(parts[1]) || bh;
+            }
+            if (dimUnit.value === 'cm') dimToMeters = 0.01;
+            else if (dimUnit.value === 'm') dimToMeters = 1;
+            else if (dimUnit.value === 'in') dimToMeters = 0.0254;
+            else if (dimUnit.value === 'ft') dimToMeters = 0.3048;
+        }
+        
+        let mortDimToMeters = 0.001;
+        if (dimUnit.value === 'cm') mortDimToMeters = 0.01;
+        if (dimUnit.value === 'm') mortDimToMeters = 1;
+        if (dimUnit.value === 'in') mortDimToMeters = 0.0254;
+        if (dimUnit.value === 'ft') mortDimToMeters = 0.3048;
+        
+        if (t !== 'custom') {
+            bw = bw * 0.001;
+            bh = bh * 0.001;
+        } else {
+            bw = bw * dimToMeters;
+            bh = bh * dimToMeters;
+        }
+        
+        let mortarM = mort * mortDimToMeters;
+        
+        const faceArea = (bw + mortarM) * (bh + mortarM);
+        let rawBricks = areaM2 / faceArea;
+        if (wt === 'full') rawBricks *= 2;
+        
+        const totalBricks = Math.ceil(rawBricks * (1 + (ws/100)));
+        
+        result.querySelector('.result-text').innerHTML = `
+            <strong>Total Bricks/Blocks Needed:</strong> ${totalBricks}<br>
+            <span style="font-size: 0.9em; opacity: 0.8;">(Includes ${ws}% waste margin)</span>
+        `;
+        addHistory('Brick Calculator', `${a}${areaUnit.value}`, `${totalBricks} units`);
+    };
+
+    type.addEventListener('change', () => {
+        customGroup.style.display = type.value === 'custom' ? 'flex' : 'none';
+        calculate();
+    });
+
+    [area, areaUnit, customDim, mortar, dimUnit, waste, wallType].forEach(el => {
+        el.addEventListener('input', calculate);
+        el.addEventListener('change', calculate);
+    });
+}
+
+function initPaintCalc() {
+    const area = document.getElementById('paint-area');
+    const unit = document.getElementById('paint-unit');
+    const subtract = document.getElementById('paint-subtract');
+    const coats = document.getElementById('paint-coats');
+    const coverage = document.getElementById('paint-coverage');
+    const outUnit = document.getElementById('paint-out-unit');
+    const result = document.getElementById('paint-result');
+    if (!area) return;
+
+    const calculate = () => {
+        let a = parseFloat(area.value);
+        let s = parseFloat(subtract.value) || 0;
+        let c = parseFloat(coats.value) || 1;
+        let cov = parseFloat(coverage.value) || 10;
+        
+        if (isNaN(a)) return;
+        
+        let netArea = a - s;
+        if (netArea < 0) netArea = 0;
+        
+        const totalAreaToPaint = netArea * c;
+        let totalVolume = totalAreaToPaint / cov;
+        
+        result.querySelector('.result-text').textContent = `Total Paint Needed = ${fmt(totalVolume)} ${outUnit.value}`;
+        addHistory('Paint Estimator', `${netArea}${unit.value}`, `${fmt(totalVolume)} ${outUnit.value}`);
+    };
+
+    [area, unit, subtract, coats, coverage, outUnit].forEach(el => {
+        el.addEventListener('input', calculate);
+        el.addEventListener('change', calculate);
+    });
+}
+
+function initVolWeightCalc() {
+    const val = document.getElementById('vol-weight-val');
+    const unit = document.getElementById('vol-weight-unit');
+    const material = document.getElementById('vol-weight-material');
+    const customGrp = document.getElementById('vol-weight-custom-group');
+    const customVal = document.getElementById('vol-weight-custom-val');
+    const result = document.getElementById('vol-weight-result');
+    if (!val) return;
+
+    const calculate = () => {
+        const v = parseFloat(val.value);
+        if (isNaN(v)) return;
+        
+        let density = 1000;
+        if (material.value === 'custom') {
+            density = parseFloat(customVal.value) || 1000;
+        } else {
+            density = parseFloat(material.value);
+        }
+        
+        let m3 = v;
+        const u = unit.value;
+        if (u === 'L') m3 = v / 1000;
+        else if (u === 'cm3') m3 = v / 1000000;
+        else if (u === 'mm3') m3 = v / 1000000000;
+        else if (u === 'ft3') m3 = v * 0.0283168;
+        else if (u === 'in3') m3 = v * 0.0000163871;
+        else if (u === 'yd3') m3 = v * 0.764555;
+        
+        const weightKg = m3 * density;
+        const weightTonnes = weightKg / 1000;
+        const weightLbs = weightKg * 2.20462;
+        
+        result.querySelector('.result-text').innerHTML = `
+            <strong>Weight:</strong><br>
+            ${fmt(weightKg)} kg<br>
+            ${fmt(weightTonnes)} Tonnes<br>
+            ${fmt(weightLbs)} lbs
+        `;
+        addHistory('Vol to Weight', `${v} ${u}`, `${fmt(weightKg)} kg`);
+    };
+
+    material.addEventListener('change', () => {
+        customGrp.style.display = material.value === 'custom' ? 'flex' : 'none';
+        calculate();
+    });
+
+    [val, unit, customVal].forEach(el => {
+        el.addEventListener('input', calculate);
+        el.addEventListener('change', calculate);
+    });
+}
+

@@ -1034,6 +1034,13 @@
                         <div class="input-group">
                             <label id="perimeter-l1">Radius / Side</label>
                             <input type="number" class="input-value" id="perimeter-dim1" placeholder="Enter value" step="any">
+                            <select class="input-unit" id="perimeter-unit">
+                                <option value="m">Meters (m)</option>
+                                <option value="cm">Centimeters (cm)</option>
+                                <option value="mm">Millimeters (mm)</option>
+                                <option value="ft">Feet (ft)</option>
+                                <option value="in">Inches (in)</option>
+                            </select>
                         </div>
                         <div class="input-group" id="perimeter-dim2-group" style="display: none;">
                             <label id="perimeter-l2">Secondary Dimension</label>
@@ -1067,6 +1074,7 @@
                                 <option value="cm">Centimeters (cm)</option>
                                 <option value="m">Meters (m)</option>
                                 <option value="in">Inches (in)</option>
+                                <option value="ft">Feet (ft)</option>
                             </select>
                         </div>
                         <div class="input-group">
@@ -1089,21 +1097,35 @@
                 <div class="converter-card">
                     <div class="input-row-3">
                         <div class="input-group">
-                            <label>Area to Cover (m²)</label>
+                            <label>Area to Cover</label>
                             <input type="number" class="input-value" id="tile-area" placeholder="e.g. 20" step="any">
+                            <select class="input-unit" id="tile-area-unit">
+                                <option value="m2" selected>m²</option>
+                                <option value="cm2">cm²</option>
+                                <option value="mm2">mm²</option>
+                                <option value="ft2">ft²</option>
+                                <option value="in2">in²</option>
+                            </select>
                         </div>
                         <div class="input-group">
-                            <label>Tile Width (mm)</label>
+                            <label>Tile Width</label>
                             <input type="number" class="input-value" id="tile-width" placeholder="e.g. 600" step="any">
+                            <select class="input-unit" id="tile-dim-unit">
+                                <option value="mm" selected>mm</option>
+                                <option value="cm">cm</option>
+                                <option value="m">m</option>
+                                <option value="in">in</option>
+                                <option value="ft">ft</option>
+                            </select>
                         </div>
                         <div class="input-group">
-                            <label>Tile Length (mm)</label>
+                            <label>Tile Length</label>
                             <input type="number" class="input-value" id="tile-length" placeholder="e.g. 600" step="any">
                         </div>
                     </div>
                     <div class="input-row-3" style="margin-top: 15px;">
                         <div class="input-group">
-                            <label>Grout Gap (mm)</label>
+                            <label>Grout Gap</label>
                             <input type="number" class="input-value" id="tile-grout" placeholder="e.g. 2" value="2" step="any">
                         </div>
                         <div class="input-group">
@@ -1130,8 +1152,15 @@
                 <div class="converter-card">
                     <div class="input-row-3">
                         <div class="input-group">
-                            <label>Wall Area (m²)</label>
+                            <label>Wall Area</label>
                             <input type="number" class="input-value" id="brick-area" placeholder="e.g. 15" step="any">
+                            <select class="input-unit" id="brick-area-unit">
+                                <option value="m2" selected>m²</option>
+                                <option value="cm2">cm²</option>
+                                <option value="mm2">mm²</option>
+                                <option value="ft2">ft²</option>
+                                <option value="in2">in²</option>
+                            </select>
                         </div>
                         <div class="input-group">
                             <label>Brick Type</label>
@@ -1142,14 +1171,21 @@
                             </select>
                         </div>
                         <div class="input-group" id="brick-custom-group" style="display: none;">
-                            <label>Custom L × H (mm)</label>
+                            <label>Custom L × H</label>
                             <input type="text" class="input-value" id="brick-custom-dim" placeholder="e.g. 215x65">
                         </div>
                     </div>
                     <div class="input-row-3" style="margin-top: 15px;">
                         <div class="input-group">
-                            <label>Mortar Joint (mm)</label>
+                            <label>Mortar Joint</label>
                             <input type="number" class="input-value" id="brick-mortar" placeholder="e.g. 10" value="10" step="any">
+                            <select class="input-unit" id="brick-dim-unit">
+                                <option value="mm" selected>mm</option>
+                                <option value="cm">cm</option>
+                                <option value="m">m</option>
+                                <option value="in">in</option>
+                                <option value="ft">ft</option>
+                            </select>
                         </div>
                         <div class="input-group">
                             <label>Waste Margin (%)</label>
@@ -1185,7 +1221,10 @@
                             <label>Area Unit</label>
                             <select class="input-unit" id="paint-unit">
                                 <option value="m2" selected>m²</option>
+                                <option value="cm2">cm²</option>
+                                <option value="mm2">mm²</option>
                                 <option value="ft2">ft²</option>
+                                <option value="in2">in²</option>
                             </select>
                         </div>
                         <div class="input-group">
@@ -1230,8 +1269,11 @@
                             <input type="number" class="input-value" id="vol-weight-val" placeholder="Enter volume" step="any">
                             <select class="input-unit" id="vol-weight-unit">
                                 <option value="m3" selected>Cubic Meters (m³)</option>
+                                <option value="cm3">Cubic Centimeters (cm³)</option>
+                                <option value="mm3">Cubic Millimeters (mm³)</option>
                                 <option value="L">Liters (L)</option>
                                 <option value="ft3">Cubic Feet (ft³)</option>
+                                <option value="in3">Cubic Inches (in³)</option>
                                 <option value="yd3">Cubic Yards (yd³)</option>
                             </select>
                         </div>
