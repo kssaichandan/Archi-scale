@@ -1,0 +1,88 @@
+/* ============================================
+   RESPONSIVE DESIGN - Mobile, Tablet, Desktop
+   ============================================ */
+
+/* Tablet: 768px - 1024px */
+@media (max-width: 1024px) {
+    .nav-item {
+        padding: 7px 14px 7px 20px;
+        font-size: 0.82rem;
+    }
+}
+
+/* Mobile: below 768px */
+@media (max-width: 768px) {
+
+    .main-content {
+        padding: 16px;
+    }
+
+    .converter-row {
+        flex-direction: column;
+        gap: 12px;
+    }
+    .btn-swap {
+        align-self: center;
+        transform: rotate(90deg);
+    }
+    .btn-swap:hover {
+        transform: rotate(270deg);
+    }
+
+    .input-row-3 {
+        flex-direction: column;
+    }
+
+    .section-header h2 {
+        font-size: 1.2rem;
+    }
+
+    .scale-presets, .imperial-scales {
+        gap: 4px;
+    }
+    .preset-btn {
+        padding: 5px 8px;
+        font-size: 0.75rem;
+    }
+
+    .paper-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .history-item {
+        flex-wrap: wrap;
+        gap: 6px;
+    }
+
+    .found-scale {
+        font-size: 1.6rem;
+    }
+    .resize-percentage {
+        font-size: 2rem;
+    }
+}
+
+/* Small phones: below 480px */
+@media (max-width: 480px) {
+    .header {
+        padding: 0 12px;
+    }
+    .logo {
+        font-size: 1.1rem;
+    }
+    .main-content {
+        padding: 12px;
+    }
+    .converter-card {
+        padding: 16px;
+    }
+    .paper-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+    .scale-info {
+        flex-direction: column;
+        gap: 4px;
+        text-align: center;
+    }
+}
+

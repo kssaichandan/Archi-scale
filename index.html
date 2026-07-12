@@ -1,0 +1,919 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Archi-Scale | Architecture Unit Converter</title>
+    <link rel="stylesheet" href="css/themes.css">
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/responsive.css">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📐</text></svg>">
+</head>
+<body>
+    <header class="header">
+        <div class="header-left">
+            <button class="hamburger" id="hamburger" aria-label="Toggle menu">
+                <span></span><span></span><span></span>
+            </button>
+            <h1 class="logo">📐 Archi-Scale</h1>
+        </div>
+        <div class="header-right">
+            <button class="btn-icon" id="precisionBtn" title="Decimal places">10</button>
+            <button class="btn-icon theme-toggle" id="themeToggle" aria-label="Toggle theme">☀️</button>
+        </div>
+    </header>
+
+    <div class="app-layout">
+        <aside class="sidebar" id="sidebar">
+            <nav class="nav">
+                <div class="nav-category">
+                    <h3 class="nav-heading">📏 Converters</h3>
+                    <button class="nav-item active" data-section="length">Length</button>
+                    <button class="nav-item" data-section="area">Area</button>
+                    <button class="nav-item" data-section="volume">Volume</button>
+                    <button class="nav-item" data-section="mass">Mass / Weight</button>
+                    <button class="nav-item" data-section="temperature">Temperature</button>
+                    <button class="nav-item" data-section="pressure">Pressure</button>
+                    <button class="nav-item" data-section="density">Density</button>
+                    <button class="nav-item" data-section="angle">Angle</button>
+                </div>
+                <div class="nav-category">
+                    <h3 class="nav-heading">🏗️ Scale Tools</h3>
+                    <button class="nav-item" data-section="scale-metric">Scale Converter</button>
+                    <button class="nav-item" data-section="scale-imperial">Imperial Scales</button>
+                    <button class="nav-item" data-section="reverse-scale">Find Scale</button>
+                    <button class="nav-item" data-section="paper-fit">Paper Fit</button>
+                    <button class="nav-item" data-section="scale-resize">Scale Resize</button>
+                    <button class="nav-item" data-section="scale-custom">Custom Scale</button>
+                </div>
+                <div class="nav-category">
+                    <h3 class="nav-heading">🧱 Construction</h3>
+                    <button class="nav-item" data-section="board-feet">Board Feet</button>
+                    <button class="nav-item" data-section="roofing">Roofing Squares</button>
+                    <button class="nav-item" data-section="concrete">Concrete Volume</button>
+                </div>
+                <div class="nav-category">
+                    <h3 class="nav-heading">📖 Reference</h3>
+                    <button class="nav-item" data-section="arch-dimensions">Arch. Dimensions</button>
+                    <button class="nav-item" data-section="material-densities">Material Densities</button>
+                    <button class="nav-item" data-section="paper-sizes">Paper Sizes</button>
+                    <button class="nav-item" data-section="scale-ref">Scale Reference</button>
+                </div>
+                <div class="nav-category">
+                    <h3 class="nav-heading">⭐ More</h3>
+                    <button class="nav-item" data-section="history">History</button>
+                    <button class="nav-item" data-section="favorites">Favorites</button>
+                </div>
+            </nav>
+        </aside>
+
+        <main class="main-content" id="mainContent">
+            <!-- ===== LENGTH CONVERTER ===== -->
+            <section class="section active" id="section-length">
+                <div class="section-header">
+                    <h2>Length Converter</h2>
+                    <button class="btn-star" data-fav="length">☆</button>
+                </div>
+                <div class="converter-card">
+                    <div class="converter-row">
+                        <div class="input-group">
+                            <label>From</label>
+                            <input type="number" class="input-value" id="length-from-val" placeholder="Enter value" step="any">
+                            <select class="input-unit" id="length-from-unit">
+                                <option value="mm">Millimeters (mm)</option>
+                                <option value="cm">Centimeters (cm)</option>
+                                <option value="m" selected>Meters (m)</option>
+                                <option value="km">Kilometers (km)</option>
+                                <option value="in">Inches (in)</option>
+                                <option value="ft">Feet (ft)</option>
+                                <option value="yd">Yards (yd)</option>
+                                <option value="mi">Miles (mi)</option>
+                            </select>
+                        </div>
+                        <button class="btn-swap" data-from="length-from-val" data-to="length-to-val" data-from-unit="length-from-unit" data-to-unit="length-to-unit">⇄</button>
+                        <div class="input-group">
+                            <label>To</label>
+                            <input type="number" class="input-value" id="length-to-val" placeholder="Result" step="any" readonly>
+                            <select class="input-unit" id="length-to-unit">
+                                <option value="mm">Millimeters (mm)</option>
+                                <option value="cm" selected>Centimeters (cm)</option>
+                                <option value="m">Meters (m)</option>
+                                <option value="km">Kilometers (km)</option>
+                                <option value="in">Inches (in)</option>
+                                <option value="ft">Feet (ft)</option>
+                                <option value="yd">Yards (yd)</option>
+                                <option value="mi">Miles (mi)</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="result-display" id="length-result">
+                        <span class="result-text">Enter a value to convert</span>
+                        <button class="btn-copy" title="Copy result">📋</button>
+                    </div>
+                    <div class="formula-display" id="length-formula"></div>
+                </div>
+            </section>
+
+            <!-- ===== AREA CONVERTER ===== -->
+            <section class="section" id="section-area">
+                <div class="section-header">
+                    <h2>Area Converter</h2>
+                    <button class="btn-star" data-fav="area">☆</button>
+                </div>
+                <div class="converter-card">
+                    <div class="converter-row">
+                        <div class="input-group">
+                            <label>From</label>
+                            <input type="number" class="input-value" id="area-from-val" placeholder="Enter value" step="any">
+                            <select class="input-unit" id="area-from-unit">
+                                <option value="mm2">mm²</option>
+                                <option value="cm2">cm²</option>
+                                <option value="m2" selected>m²</option>
+                                <option value="km2">km²</option>
+                                <option value="ha">Hectares</option>
+                                <option value="acre">Acres</option>
+                                <option value="in2">in²</option>
+                                <option value="ft2">ft²</option>
+                                <option value="yd2">yd²</option>
+                            </select>
+                        </div>
+                        <button class="btn-swap">⇄</button>
+                        <div class="input-group">
+                            <label>To</label>
+                            <input type="number" class="input-value" id="area-to-val" placeholder="Result" step="any" readonly>
+                            <select class="input-unit" id="area-to-unit">
+                                <option value="mm2">mm²</option>
+                                <option value="cm2" selected>cm²</option>
+                                <option value="m2">m²</option>
+                                <option value="km2">km²</option>
+                                <option value="ha">Hectares</option>
+                                <option value="acre">Acres</option>
+                                <option value="in2">in²</option>
+                                <option value="ft2">ft²</option>
+                                <option value="yd2">yd²</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="result-display" id="area-result">
+                        <span class="result-text">Enter a value to convert</span>
+                        <button class="btn-copy" title="Copy result">📋</button>
+                    </div>
+                    <div class="formula-display" id="area-formula"></div>
+                </div>
+            </section>
+
+            <!-- ===== VOLUME CONVERTER ===== -->
+            <section class="section" id="section-volume">
+                <div class="section-header">
+                    <h2>Volume Converter</h2>
+                    <button class="btn-star" data-fav="volume">☆</button>
+                </div>
+                <div class="converter-card">
+                    <div class="converter-row">
+                        <div class="input-group">
+                            <label>From</label>
+                            <input type="number" class="input-value" id="volume-from-val" placeholder="Enter value" step="any">
+                            <select class="input-unit" id="volume-from-unit">
+                                <option value="mm3">mm³</option>
+                                <option value="cm3">cm³</option>
+                                <option value="m3" selected>m³</option>
+                                <option value="L">Liters</option>
+                                <option value="mL">Milliliters</option>
+                                <option value="gal">Gallons (US)</option>
+                                <option value="in3">in³</option>
+                                <option value="ft3">ft³</option>
+                                <option value="yd3">yd³</option>
+                            </select>
+                        </div>
+                        <button class="btn-swap">⇄</button>
+                        <div class="input-group">
+                            <label>To</label>
+                            <input type="number" class="input-value" id="volume-to-val" placeholder="Result" step="any" readonly>
+                            <select class="input-unit" id="volume-to-unit">
+                                <option value="mm3">mm³</option>
+                                <option value="cm3" selected>cm³</option>
+                                <option value="m3">m³</option>
+                                <option value="L">Liters</option>
+                                <option value="mL">Milliliters</option>
+                                <option value="gal">Gallons (US)</option>
+                                <option value="in3">in³</option>
+                                <option value="ft3">ft³</option>
+                                <option value="yd3">yd³</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="result-display" id="volume-result">
+                        <span class="result-text">Enter a value to convert</span>
+                        <button class="btn-copy" title="Copy result">📋</button>
+                    </div>
+                    <div class="formula-display" id="volume-formula"></div>
+                </div>
+            </section>
+
+            <!-- ===== MASS CONVERTER ===== -->
+            <section class="section" id="section-mass">
+                <div class="section-header">
+                    <h2>Mass / Weight Converter</h2>
+                    <button class="btn-star" data-fav="mass">☆</button>
+                </div>
+                <div class="converter-card">
+                    <div class="converter-row">
+                        <div class="input-group">
+                            <label>From</label>
+                            <input type="number" class="input-value" id="mass-from-val" placeholder="Enter value" step="any">
+                            <select class="input-unit" id="mass-from-unit">
+                                <option value="mg">Milligrams (mg)</option>
+                                <option value="g">Grams (g)</option>
+                                <option value="kg" selected>Kilograms (kg)</option>
+                                <option value="t">Tonnes (t)</option>
+                                <option value="oz">Ounces (oz)</option>
+                                <option value="lb">Pounds (lb)</option>
+                                <option value="st">Stone (st)</option>
+                            </select>
+                        </div>
+                        <button class="btn-swap">⇄</button>
+                        <div class="input-group">
+                            <label>To</label>
+                            <input type="number" class="input-value" id="mass-to-val" placeholder="Result" step="any" readonly>
+                            <select class="input-unit" id="mass-to-unit">
+                                <option value="mg">Milligrams (mg)</option>
+                                <option value="g" selected>Grams (g)</option>
+                                <option value="kg">Kilograms (kg)</option>
+                                <option value="t">Tonnes (t)</option>
+                                <option value="oz">Ounces (oz)</option>
+                                <option value="lb">Pounds (lb)</option>
+                                <option value="st">Stone (st)</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="result-display" id="mass-result">
+                        <span class="result-text">Enter a value to convert</span>
+                        <button class="btn-copy" title="Copy result">📋</button>
+                    </div>
+                    <div class="formula-display" id="mass-formula"></div>
+                </div>
+            </section>
+
+            <!-- ===== TEMPERATURE CONVERTER ===== -->
+            <section class="section" id="section-temperature">
+                <div class="section-header">
+                    <h2>Temperature Converter</h2>
+                    <button class="btn-star" data-fav="temperature">☆</button>
+                </div>
+                <div class="converter-card">
+                    <div class="converter-row">
+                        <div class="input-group">
+                            <label>From</label>
+                            <input type="number" class="input-value" id="temp-from-val" placeholder="Enter value" step="any">
+                            <select class="input-unit" id="temp-from-unit">
+                                <option value="C" selected>Celsius (°C)</option>
+                                <option value="F">Fahrenheit (°F)</option>
+                                <option value="K">Kelvin (K)</option>
+                            </select>
+                        </div>
+                        <button class="btn-swap">⇄</button>
+                        <div class="input-group">
+                            <label>To</label>
+                            <input type="number" class="input-value" id="temp-to-val" placeholder="Result" step="any" readonly>
+                            <select class="input-unit" id="temp-to-unit">
+                                <option value="C">Celsius (°C)</option>
+                                <option value="F" selected>Fahrenheit (°F)</option>
+                                <option value="K">Kelvin (K)</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="result-display" id="temp-result">
+                        <span class="result-text">Enter a value to convert</span>
+                        <button class="btn-copy" title="Copy result">📋</button>
+                    </div>
+                    <div class="formula-display" id="temp-formula"></div>
+                </div>
+            </section>
+
+            <!-- ===== PRESSURE CONVERTER ===== -->
+            <section class="section" id="section-pressure">
+                <div class="section-header">
+                    <h2>Pressure Converter</h2>
+                    <button class="btn-star" data-fav="pressure">☆</button>
+                </div>
+                <div class="converter-card">
+                    <div class="converter-row">
+                        <div class="input-group">
+                            <label>From</label>
+                            <input type="number" class="input-value" id="pressure-from-val" placeholder="Enter value" step="any">
+                            <select class="input-unit" id="pressure-from-unit">
+                                <option value="Pa" selected>Pascals (Pa)</option>
+                                <option value="kPa">Kilopascals (kPa)</option>
+                                <option value="MPa">Megapascals (MPa)</option>
+                                <option value="psi">PSI</option>
+                                <option value="bar">Bar</option>
+                                <option value="atm">Atmospheres</option>
+                                <option value="kgf">kgf/cm²</option>
+                            </select>
+                        </div>
+                        <button class="btn-swap">⇄</button>
+                        <div class="input-group">
+                            <label>To</label>
+                            <input type="number" class="input-value" id="pressure-to-val" placeholder="Result" step="any" readonly>
+                            <select class="input-unit" id="pressure-to-unit">
+                                <option value="Pa">Pascals (Pa)</option>
+                                <option value="kPa" selected>Kilopascals (kPa)</option>
+                                <option value="MPa">Megapascals (MPa)</option>
+                                <option value="psi">PSI</option>
+                                <option value="bar">Bar</option>
+                                <option value="atm">Atmospheres</option>
+                                <option value="kgf">kgf/cm²</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="result-display" id="pressure-result">
+                        <span class="result-text">Enter a value to convert</span>
+                        <button class="btn-copy" title="Copy result">📋</button>
+                    </div>
+                    <div class="formula-display" id="pressure-formula"></div>
+                </div>
+            </section>
+
+            <!-- ===== DENSITY CONVERTER ===== -->
+            <section class="section" id="section-density">
+                <div class="section-header">
+                    <h2>Density Converter</h2>
+                    <button class="btn-star" data-fav="density">☆</button>
+                </div>
+                <div class="converter-card">
+                    <div class="converter-row">
+                        <div class="input-group">
+                            <label>From</label>
+                            <input type="number" class="input-value" id="density-from-val" placeholder="Enter value" step="any">
+                            <select class="input-unit" id="density-from-unit">
+                                <option value="kgm3" selected>kg/m³</option>
+                                <option value="gcm3">g/cm³</option>
+                                <option value="lbft3">lb/ft³</option>
+                                <option value="lbin3">lb/in³</option>
+                            </select>
+                        </div>
+                        <button class="btn-swap">⇄</button>
+                        <div class="input-group">
+                            <label>To</label>
+                            <input type="number" class="input-value" id="density-to-val" placeholder="Result" step="any" readonly>
+                            <select class="input-unit" id="density-to-unit">
+                                <option value="kgm3">kg/m³</option>
+                                <option value="gcm3" selected>g/cm³</option>
+                                <option value="lbft3">lb/ft³</option>
+                                <option value="lbin3">lb/in³</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="result-display" id="density-result">
+                        <span class="result-text">Enter a value to convert</span>
+                        <button class="btn-copy" title="Copy result">📋</button>
+                    </div>
+                    <div class="formula-display" id="density-formula"></div>
+                </div>
+            </section>
+
+            <!-- ===== ANGLE CONVERTER ===== -->
+            <section class="section" id="section-angle">
+                <div class="section-header">
+                    <h2>Angle Converter</h2>
+                    <button class="btn-star" data-fav="angle">☆</button>
+                </div>
+                <div class="converter-card">
+                    <div class="converter-row">
+                        <div class="input-group">
+                            <label>From</label>
+                            <input type="number" class="input-value" id="angle-from-val" placeholder="Enter value" step="any">
+                            <select class="input-unit" id="angle-from-unit">
+                                <option value="deg" selected>Degrees (°)</option>
+                                <option value="rad">Radians (rad)</option>
+                                <option value="grad">Gradians (gon)</option>
+                                <option value="arcmin">Arcminutes (′)</option>
+                                <option value="arcsec">Arcseconds (″)</option>
+                            </select>
+                        </div>
+                        <button class="btn-swap">⇄</button>
+                        <div class="input-group">
+                            <label>To</label>
+                            <input type="number" class="input-value" id="angle-to-val" placeholder="Result" step="any" readonly>
+                            <select class="input-unit" id="angle-to-unit">
+                                <option value="deg">Degrees (°)</option>
+                                <option value="rad" selected>Radians (rad)</option>
+                                <option value="grad">Gradians (gon)</option>
+                                <option value="arcmin">Arcminutes (′)</option>
+                                <option value="arcsec">Arcseconds (″)</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="result-display" id="angle-result">
+                        <span class="result-text">Enter a value to convert</span>
+                        <button class="btn-copy" title="Copy result">📋</button>
+                    </div>
+                    <div class="formula-display" id="angle-formula"></div>
+                </div>
+            </section>
+
+            <!-- ===== METRIC SCALE CONVERTER ===== -->
+            <section class="section" id="section-scale-metric">
+                <div class="section-header">
+                    <h2>Scale Converter (Metric)</h2>
+                    <button class="btn-star" data-fav="scale-metric">☆</button>
+                </div>
+                <div class="converter-card">
+                    <div class="scale-tabs">
+                        <button class="scale-tab active" data-mode="real-to-drawing">Real → Drawing</button>
+                        <button class="scale-tab" data-mode="drawing-to-real">Drawing → Real</button>
+                    </div>
+                    <div class="scale-presets">
+                        <button class="preset-btn" data-scale="1">1:1</button>
+                        <button class="preset-btn" data-scale="5">1:5</button>
+                        <button class="preset-btn" data-scale="10">1:10</button>
+                        <button class="preset-btn" data-scale="20">1:20</button>
+                        <button class="preset-btn" data-scale="50" >1:50</button>
+                        <button class="preset-btn active" data-scale="100">1:100</button>
+                        <button class="preset-btn" data-scale="200">1:200</button>
+                        <button class="preset-btn" data-scale="500">1:500</button>
+                        <button class="preset-btn" data-scale="1000">1:1000</button>
+                        <button class="preset-btn" data-scale="custom">Custom</button>
+                    </div>
+                    <div class="custom-scale-input-wrapper" id="metric-custom-wrapper" style="display: none; margin-bottom: 16px;">
+                        <div class="input-group" style="flex-direction: row; align-items: center; gap: 8px;">
+                            <label style="margin-bottom: 0;">Custom 1:</label>
+                            <input type="number" class="input-value" id="metric-scale-custom-val" placeholder="e.g. 33.3" step="any">
+                        </div>
+                    </div>
+                    <div class="converter-row">
+                        <div class="input-group">
+                            <label id="scale-metric-from-label">Real World</label>
+                            <input type="number" class="input-value" id="scale-metric-from-val" placeholder="Enter value" step="any">
+                            <select class="input-unit" id="scale-metric-from-unit">
+                                <option value="mm">mm</option>
+                                <option value="cm">cm</option>
+                                <option value="m" selected>m</option>
+                                <option value="km">km</option>
+                                <option value="in">inches</option>
+                                <option value="ft">feet</option>
+                                <option value="yd">yards</option>
+                            </select>
+                        </div>
+                        <button class="btn-swap">⇄</button>
+                        <div class="input-group">
+                            <label id="scale-metric-to-label">Drawing</label>
+                            <input type="number" class="input-value" id="scale-metric-to-val" placeholder="Result" step="any" readonly>
+                            <select class="input-unit" id="scale-metric-to-unit">
+                                <option value="mm" selected>mm</option>
+                                <option value="cm">cm</option>
+                                <option value="m">m</option>
+                                <option value="km">km</option>
+                                <option value="in">inches</option>
+                                <option value="ft">feet</option>
+                                <option value="yd">yards</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="scale-info">
+                        <span>Scale: <strong id="scale-metric-ratio">1:100</strong></span>
+                        <span id="scale-metric-explain">At 1:100, 1mm on drawing = 100mm in reality</span>
+                    </div>
+                    <div class="result-display" id="scale-metric-result">
+                        <span class="result-text">Enter a value to convert</span>
+                        <button class="btn-copy" title="Copy result">📋</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ===== IMPERIAL SCALE CONVERTER ===== -->
+            <section class="section" id="section-scale-imperial">
+                <div class="section-header">
+                    <h2>Imperial Scale Converter</h2>
+                    <button class="btn-star" data-fav="scale-imperial">☆</button>
+                </div>
+                <div class="converter-card">
+                    <div class="imperial-scales">
+                        <button class="preset-btn" data-scale="192" title="1/16 inch = 1 foot">1/16&quot;=1&apos;</button>
+                        <button class="preset-btn" data-scale="96" title="1/8 inch = 1 foot">1/8&quot;=1&apos;</button>
+                        <button class="preset-btn" data-scale="64" title="3/16 inch = 1 foot">3/16&quot;=1&apos;</button>
+                        <button class="preset-btn active" data-scale="48" title="1/4 inch = 1 foot">1/4&quot;=1&apos;</button>
+                        <button class="preset-btn" data-scale="32" title="3/8 inch = 1 foot">3/8&quot;=1&apos;</button>
+                        <button class="preset-btn" data-scale="24" title="1/2 inch = 1 foot">1/2&quot;=1&apos;</button>
+                        <button class="preset-btn" data-scale="16" title="3/4 inch = 1 foot">3/4&quot;=1&apos;</button>
+                        <button class="preset-btn" data-scale="12" title="1 inch = 1 foot">1&quot;=1&apos;</button>
+                        <button class="preset-btn" data-scale="custom">Custom</button>
+                    </div>
+                    <div class="custom-scale-input-wrapper" id="imp-custom-wrapper" style="display: none; margin-bottom: 16px;">
+                        <div class="input-group" style="flex-direction: row; align-items: center; gap: 8px;">
+                            <label style="margin-bottom: 0;">Custom 1:</label>
+                            <input type="number" class="input-value" id="imp-scale-custom-val" placeholder="e.g. 33.3" step="any">
+                        </div>
+                    </div>
+                    <div class="converter-row">
+                        <div class="input-group">
+                            <label>Real World</label>
+                            <input type="number" class="input-value" id="imp-scale-from-val" placeholder="Enter feet" step="any">
+                            <select class="input-unit" id="imp-scale-from-unit">
+                                <option value="ft" selected>Feet</option>
+                                <option value="in">Inches</option>
+                                <option value="m">Meters</option>
+                            </select>
+                        </div>
+                        <button class="btn-swap">⇄</button>
+                        <div class="input-group">
+                            <label>Drawing</label>
+                            <input type="number" class="input-value" id="imp-scale-to-val" placeholder="Result" step="any" readonly>
+                            <select class="input-unit" id="imp-scale-to-unit">
+                                <option value="in" selected>Inches</option>
+                                <option value="ft">Feet</option>
+                                <option value="mm">mm</option>
+                                <option value="cm">cm</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="scale-info">
+                        <span>Scale: <strong id="imp-scale-ratio">1/4&quot; = 1&apos;-0&quot;</strong></span>
+                        <span id="imp-scale-metric">(Metric: 1:48)</span>
+                    </div>
+                    <div class="result-display" id="scale-imperial-result">
+                        <span class="result-text">Enter a value to convert</span>
+                        <button class="btn-copy" title="Copy result">📋</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ===== REVERSE SCALE FINDER ===== -->
+            <section class="section" id="section-reverse-scale">
+                <div class="section-header">
+                    <h2>Find Scale (Reverse Scale Finder)</h2>
+                    <button class="btn-star" data-fav="reverse-scale">☆</button>
+                </div>
+                <div class="converter-card">
+                    <p class="tool-description">Measure a known length on your drawing and enter the real-world size to find the scale.</p>
+                    <div class="converter-row">
+                        <div class="input-group">
+                            <label>Measured on Drawing</label>
+                            <input type="number" class="input-value" id="rev-scale-drawing" placeholder="e.g. 60" step="any">
+                            <select class="input-unit" id="rev-scale-drawing-unit">
+                                <option value="mm" selected>mm</option>
+                                <option value="cm">cm</option>
+                                <option value="m">m</option>
+                                <option value="in">inches</option>
+                                <option value="ft">feet</option>
+                            </select>
+                        </div>
+                        <div class="input-group">
+                            <label>Real-World Size</label>
+                            <input type="number" class="input-value" id="rev-scale-real" placeholder="e.g. 6000" step="any">
+                            <select class="input-unit" id="rev-scale-real-unit">
+                                <option value="mm" selected>mm</option>
+                                <option value="cm">cm</option>
+                                <option value="m">m</option>
+                                <option value="km">km</option>
+                                <option value="in">inches</option>
+                                <option value="ft">feet</option>
+                                <option value="yd">yards</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="reverse-scale-result" id="reverse-scale-result">
+                        <div class="found-scale">1:<span id="found-scale-value">—</span></div>
+                        <div class="nearest-standard" id="nearest-standard"></div>
+                        <div class="scale-error" id="scale-error"></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ===== PAPER FIT CHECKER ===== -->
+            <section class="section" id="section-paper-fit">
+                <div class="section-header">
+                    <h2>Paper Size Fit Checker</h2>
+                    <button class="btn-star" data-fav="paper-fit">☆</button>
+                </div>
+                <div class="converter-card">
+                    <p class="tool-description">Check which paper size fits your drawing at a given scale.</p>
+                    <div class="input-row-3">
+                        <div class="input-group">
+                            <label>Real Width (m)</label>
+                            <input type="number" class="input-value" id="paper-fit-width" placeholder="e.g. 12" step="any">
+                        </div>
+                        <div class="input-group">
+                            <label>Real Height (m)</label>
+                            <input type="number" class="input-value" id="paper-fit-height" placeholder="e.g. 8" step="any">
+                        </div>
+                        <div class="input-group">
+                            <label>Scale</label>
+                            <select class="input-unit" id="paper-fit-scale">
+                                <option value="10">1:10</option>
+                                <option value="20">1:20</option>
+                                <option value="50">1:50</option>
+                                <option value="100" selected>1:100</option>
+                                <option value="200">1:200</option>
+                                <option value="500">1:500</option>
+                                <option value="1000">1:1000</option>
+                                <option value="custom">Custom</option>
+                            </select>
+                            <input type="number" class="input-value" id="paper-fit-custom-val" placeholder="Ratio (e.g. 33.3)" step="any" style="display:none; margin-top: 8px;">
+                        </div>
+                    </div>
+                    <div class="paper-fit-results" id="paper-fit-results">
+                        <div class="drawing-size" id="paper-drawing-size"></div>
+                        <div class="paper-grid" id="paper-fit-grid"></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ===== SCALE RESIZE ===== -->
+            <section class="section" id="section-scale-resize">
+                <div class="section-header">
+                    <h2>Scale-to-Scale Resize</h2>
+                    <button class="btn-star" data-fav="scale-resize">☆</button>
+                </div>
+                <div class="converter-card">
+                    <p class="tool-description">Convert a drawing from one scale to another. Shows the resize percentage for copier/CAD.</p>
+                    <div class="input-row-3">
+                        <div class="input-group">
+                            <label>Current Scale</label>
+                            <select class="input-unit" id="resize-from-scale">
+                                <option value="10">1:10</option>
+                                <option value="20">1:20</option>
+                                <option value="50" selected>1:50</option>
+                                <option value="100">1:100</option>
+                                <option value="200">1:200</option>
+                                <option value="500">1:500</option>
+                                <option value="1000">1:1000</option>
+                                <option value="custom">Custom</option>
+                            </select>
+                            <input type="number" class="input-value" id="resize-from-custom-val" placeholder="Ratio" step="any" style="display:none; margin-top: 8px;">
+                        </div>
+                        <div class="input-group">
+                            <label>Target Scale</label>
+                            <select class="input-unit" id="resize-to-scale">
+                                <option value="10">1:10</option>
+                                <option value="20">1:20</option>
+                                <option value="50">1:50</option>
+                                <option value="100" selected>1:100</option>
+                                <option value="200">1:200</option>
+                                <option value="500">1:500</option>
+                                <option value="1000">1:1000</option>
+                                <option value="custom">Custom</option>
+                            </select>
+                            <input type="number" class="input-value" id="resize-to-custom-val" placeholder="Ratio" step="any" style="display:none; margin-top: 8px;">
+                        </div>
+                        <div class="input-group">
+                            <label>Current Drawing Size (mm)</label>
+                            <input type="number" class="input-value" id="resize-drawing-val" placeholder="e.g. 100" step="any">
+                        </div>
+                    </div>
+                    <div class="resize-result" id="resize-result">
+                        <div class="resize-percentage" id="resize-percentage">—</div>
+                        <div class="resize-detail" id="resize-detail"></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ===== CUSTOM SCALE CONVERTER ===== -->
+            <section class="section" id="section-scale-custom">
+                <div class="section-header">
+                    <h2>Custom Scale Converter</h2>
+                    <button class="btn-star" data-fav="scale-custom">☆</button>
+                </div>
+                <div class="converter-card">
+                    <p class="tool-description">Enter a custom scale ratio (e.g., 1:33.3) to convert between Real World and Drawing sizes.</p>
+                    <div class="scale-tabs">
+                        <button class="scale-tab active" data-mode="real-to-drawing" id="custom-scale-tab-real">Real → Drawing</button>
+                        <button class="scale-tab" data-mode="drawing-to-real" id="custom-scale-tab-draw">Drawing → Real</button>
+                    </div>
+                    <div class="input-row-3" style="margin-bottom: 24px;">
+                        <div class="input-group" style="flex: 0 0 120px;">
+                            <label>Ratio 1:</label>
+                            <input type="number" class="input-value" id="custom-scale-ratio" value="100" step="any" placeholder="e.g. 33.3">
+                        </div>
+                    </div>
+                    <div class="converter-row">
+                        <div class="input-group">
+                            <label id="custom-scale-from-label">Real World</label>
+                            <input type="number" class="input-value" id="custom-scale-from-val" placeholder="Enter value" step="any">
+                            <select class="input-unit" id="custom-scale-from-unit">
+                                <option value="mm">mm</option>
+                                <option value="cm">cm</option>
+                                <option value="m" selected>m</option>
+                                <option value="km">km</option>
+                                <option value="in">inches</option>
+                                <option value="ft">feet</option>
+                                <option value="yd">yards</option>
+                            </select>
+                        </div>
+                        <button class="btn-swap" id="custom-scale-swap">⇄</button>
+                        <div class="input-group">
+                            <label id="custom-scale-to-label">Drawing</label>
+                            <input type="number" class="input-value" id="custom-scale-to-val" placeholder="Result" step="any" readonly>
+                            <select class="input-unit" id="custom-scale-to-unit">
+                                <option value="mm" selected>mm</option>
+                                <option value="cm">cm</option>
+                                <option value="m">m</option>
+                                <option value="km">km</option>
+                                <option value="in">inches</option>
+                                <option value="ft">feet</option>
+                                <option value="yd">yards</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="result-display" id="custom-scale-result">
+                        <span class="result-text">Enter a value to convert</span>
+                        <button class="btn-copy" title="Copy result">📋</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ===== BOARD FEET ===== -->
+            <section class="section" id="section-board-feet">
+                <div class="section-header">
+                    <h2>Board Feet Converter</h2>
+                    <button class="btn-star" data-fav="board-feet">☆</button>
+                </div>
+                <div class="converter-card">
+                    <div class="converter-row">
+                        <div class="input-group">
+                            <label>From</label>
+                            <input type="number" class="input-value" id="bf-from-val" placeholder="Enter value" step="any">
+                            <select class="input-unit" id="bf-from-unit">
+                                <option value="bf" selected>Board Feet</option>
+                                <option value="in3">Cubic Inches</option>
+                                <option value="cm3">Cubic cm</option>
+                                <option value="m3">Cubic meters</option>
+                                <option value="ft3">Cubic Feet</option>
+                            </select>
+                        </div>
+                        <button class="btn-swap">⇄</button>
+                        <div class="input-group">
+                            <label>To</label>
+                            <input type="number" class="input-value" id="bf-to-val" placeholder="Result" step="any" readonly>
+                            <select class="input-unit" id="bf-to-unit">
+                                <option value="bf">Board Feet</option>
+                                <option value="in3">Cubic Inches</option>
+                                <option value="cm3" selected>Cubic cm</option>
+                                <option value="m3">Cubic meters</option>
+                                <option value="ft3">Cubic Feet</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="result-display" id="board-feet-result">
+                        <span class="result-text">Enter a value to convert</span>
+                        <button class="btn-copy" title="Copy result">📋</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ===== ROOFING SQUARES ===== -->
+            <section class="section" id="section-roofing">
+                <div class="section-header">
+                    <h2>Roofing Squares Converter</h2>
+                    <button class="btn-star" data-fav="roofing">☆</button>
+                </div>
+                <div class="converter-card">
+                    <div class="converter-row">
+                        <div class="input-group">
+                            <label>From</label>
+                            <input type="number" class="input-value" id="roof-from-val" placeholder="Enter value" step="any">
+                            <select class="input-unit" id="roof-from-unit">
+                                <option value="sq" selected>Squares (100 ft²)</option>
+                                <option value="ft2">Square Feet</option>
+                                <option value="m2">Square Meters</option>
+                                <option value="yd2">Square Yards</option>
+                            </select>
+                        </div>
+                        <button class="btn-swap">⇄</button>
+                        <div class="input-group">
+                            <label>To</label>
+                            <input type="number" class="input-value" id="roof-to-val" placeholder="Result" step="any" readonly>
+                            <select class="input-unit" id="roof-to-unit">
+                                <option value="sq">Squares (100 ft²)</option>
+                                <option value="ft2">Square Feet</option>
+                                <option value="m2" selected>Square Meters</option>
+                                <option value="yd2">Square Yards</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="result-display" id="roofing-result">
+                        <span class="result-text">Enter a value to convert</span>
+                        <button class="btn-copy" title="Copy result">📋</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ===== CONCRETE VOLUME ===== -->
+            <section class="section" id="section-concrete">
+                <div class="section-header">
+                    <h2>Concrete Volume Converter</h2>
+                    <button class="btn-star" data-fav="concrete">☆</button>
+                </div>
+                <div class="converter-card">
+                    <div class="converter-row">
+                        <div class="input-group">
+                            <label>From</label>
+                            <input type="number" class="input-value" id="concrete-from-val" placeholder="Enter value" step="any">
+                            <select class="input-unit" id="concrete-from-unit">
+                                <option value="yd3" selected>Cubic Yards</option>
+                                <option value="m3">Cubic Meters</option>
+                                <option value="ft3">Cubic Feet</option>
+                            </select>
+                        </div>
+                        <button class="btn-swap">⇄</button>
+                        <div class="input-group">
+                            <label>To</label>
+                            <input type="number" class="input-value" id="concrete-to-val" placeholder="Result" step="any" readonly>
+                            <select class="input-unit" id="concrete-to-unit">
+                                <option value="yd3">Cubic Yards</option>
+                                <option value="m3" selected>Cubic Meters</option>
+                                <option value="ft3">Cubic Feet</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="result-display" id="concrete-result">
+                        <span class="result-text">Enter a value to convert</span>
+                        <button class="btn-copy" title="Copy result">📋</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ===== ARCHITECTURAL DIMENSIONS REFERENCE ===== -->
+            <section class="section" id="section-arch-dimensions">
+                <div class="section-header">
+                    <h2>Common Architectural Dimensions</h2>
+                    <button class="btn-star" data-fav="arch-dimensions">☆</button>
+                </div>
+                <div class="reference-table" id="arch-dimensions-table">
+                    <input type="text" class="search-input" id="arch-dim-search" placeholder="Search dimensions...">
+                    <div class="table-container"></div>
+                </div>
+            </section>
+
+            <!-- ===== MATERIAL DENSITIES REFERENCE ===== -->
+            <section class="section" id="section-material-densities">
+                <div class="section-header">
+                    <h2>Material Densities</h2>
+                    <button class="btn-star" data-fav="material-densities">☆</button>
+                </div>
+                <div class="reference-table" id="material-densities-table">
+                    <input type="text" class="search-input" id="material-search" placeholder="Search materials...">
+                    <div class="table-container"></div>
+                </div>
+            </section>
+
+            <!-- ===== PAPER SIZES REFERENCE ===== -->
+            <section class="section" id="section-paper-sizes">
+                <div class="section-header">
+                    <h2>Paper Size Reference</h2>
+                    <button class="btn-star" data-fav="paper-sizes">☆</button>
+                </div>
+                <div class="reference-table" id="paper-sizes-table">
+                    <div class="tabs-group">
+                        <button class="tab-btn active" data-group="iso">ISO A-Series</button>
+                        <button class="tab-btn" data-group="ansi">ANSI</button>
+                        <button class="tab-btn" data-group="arch">ARCH</button>
+                    </div>
+                    <div class="table-container"></div>
+                </div>
+            </section>
+
+            <!-- ===== SCALE REFERENCE ===== -->
+            <section class="section" id="section-scale-ref">
+                <div class="section-header">
+                    <h2>Scale Reference Table</h2>
+                    <button class="btn-star" data-fav="scale-ref">☆</button>
+                </div>
+                <div class="reference-table" id="scale-ref-table">
+                    <div class="tabs-group">
+                        <button class="tab-btn active" data-group="metric">Metric Scales</button>
+                        <button class="tab-btn" data-group="imperial">Imperial Scales</button>
+                    </div>
+                    <div class="table-container"></div>
+                </div>
+            </section>
+
+            <!-- ===== HISTORY ===== -->
+            <section class="section" id="section-history">
+                <div class="section-header">
+                    <h2>Conversion History</h2>
+                    <button class="btn-danger" id="clearHistory">Clear All</button>
+                </div>
+                <div class="history-list" id="historyList">
+                    <p class="empty-state">No conversions yet. Start converting!</p>
+                </div>
+            </section>
+
+            <!-- ===== FAVORITES ===== -->
+            <section class="section" id="section-favorites">
+                <div class="section-header">
+                    <h2>Favorite Converters</h2>
+                </div>
+                <div class="favorites-list" id="favoritesList">
+                    <p class="empty-state">No favorites yet. Click ☆ on any converter to add it here.</p>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <div class="toast" id="toast"></div>
+
+    <script type="module" src="js/app.js"></script>
+</body>
+</html>

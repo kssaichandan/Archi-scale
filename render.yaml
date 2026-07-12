@@ -1,0 +1,6 @@
+services:
+  - type: web
+    name: archi-scale
+    env: static
+    buildCommand: ""
+    staticPublishPath: ./
