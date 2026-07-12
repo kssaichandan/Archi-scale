@@ -18,19 +18,19 @@ document.addEventListener('DOMContentLoaded', () => {
     let historyStr = '';
 
     const normalKeys = [
-        ['C', '±', '%', '/'],
+        ['C', '⌫', '%', '/'],
         ['7', '8', '9', '*'],
         ['4', '5', '6', '-'],
         ['1', '2', '3', '+'],
-        ['0', '.', '=']
+        ['±', '0', '.', '=']
     ];
 
     const scientificKeys = [
-        ['sin', 'cos', 'tan', 'C', '/'],
-        ['ln', '7', '8', '9', '*'],
-        ['log', '4', '5', '6', '-'],
-        ['√', '1', '2', '3', '+'],
-        ['^', '0', '.', '=']
+        ['sin', 'cos', 'tan', 'C', '⌫'],
+        ['ln', '7', '8', '9', '/'],
+        ['log', '4', '5', '6', '*'],
+        ['√', '1', '2', '3', '-'],
+        ['^', '0', '.', '=', '+']
     ];
 
     function renderKeys() {
@@ -45,10 +45,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 btn.className = 'calc-btn';
                 btn.textContent = key;
                 
-                if (key === '0') btn.classList.add('zero');
                 if (key === '=') btn.classList.add('equals');
                 if (['+', '-', '*', '/'].includes(key)) btn.classList.add('operator');
-                if (key === 'C') btn.classList.add('clear');
+                if (key === 'C' || key === '⌫') btn.classList.add('clear');
                 
                 btn.addEventListener('click', () => handleKeyPress(key));
                 keypad.appendChild(btn);
@@ -95,12 +94,24 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function handleKeyPress(key) {
+        if (currentValue === 'Error' || currentValue === 'NaN') {
+            if (key !== 'C') {
+                currentValue = '0';
+                previousValue = '';
+                operator = null;
+                historyStr = '';
+                waitingForNewValue = false;
+            }
+        }
+
         if (/[0-9]/.test(key)) {
             if (waitingForNewValue) {
                 currentValue = key;
                 waitingForNewValue = false;
             } else {
-                currentValue = currentValue === '0' ? key : currentValue + key;
+                if (currentValue.length < 16) {
+                    currentValue = currentValue === '0' ? key : currentValue + key;
+                }
             }
         } else if (key === '.') {
             if (waitingForNewValue) {
@@ -115,6 +126,11 @@ document.addEventListener('DOMContentLoaded', () => {
             operator = null;
             historyStr = '';
             waitingForNewValue = false;
+        } else if (key === '⌫') {
+            if (!waitingForNewValue) {
+                currentValue = currentValue.length > 1 ? currentValue.slice(0, -1) : '0';
+                if (currentValue === '-') currentValue = '0';
+            }
         } else if (key === '±') {
             currentValue = String(parseFloat(currentValue) * -1);
         } else if (key === '%') {
@@ -124,7 +140,10 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         } else if (['+', '-', '*', '/', '^'].includes(key)) {
             if (operator && !waitingForNewValue) {
-                const result = calculate(previousValue, currentValue, operator);
+                let result = calculate(previousValue, currentValue, operator);
+                if (typeof result === 'number' && String(result).length > 16) {
+                    result = Number(result.toPrecision(15));
+                }
                 currentValue = String(result);
                 historyStr = `${previousValue} ${operator} ${currentValue} ${key}`;
             } else {
@@ -135,7 +154,10 @@ document.addEventListener('DOMContentLoaded', () => {
             waitingForNewValue = true;
         } else if (key === '=') {
             if (operator && previousValue) {
-                const result = calculate(previousValue, currentValue, operator);
+                let result = calculate(previousValue, currentValue, operator);
+                if (typeof result === 'number' && String(result).length > 16) {
+                    result = Number(result.toPrecision(15));
+                }
                 historyStr = `${previousValue} ${operator} ${currentValue} =`;
                 currentValue = String(result);
                 previousValue = '';

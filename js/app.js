@@ -12,6 +12,21 @@ import { initTabs } from './ui/tabs.js';
 let precision = 6;
 
 document.addEventListener('DOMContentLoaded', () => {
+    // Safely prevent long overflowing numbers across all converters
+    document.addEventListener('input', (e) => {
+        try {
+            const target = e.target;
+            if (target && target.tagName === 'INPUT' && (target.type === 'number' || (target.classList && target.classList.contains('input-value')))) {
+                // Keep length under 16 characters safely
+                if (typeof target.value === 'string' && target.value.length > 16) {
+                    target.value = target.value.slice(0, 16);
+                }
+            }
+        } catch (err) {
+            console.error('Input restriction error:', err);
+        }
+    }, { passive: true });
+
     initTheme();
     initTabs();
     initClipboard();

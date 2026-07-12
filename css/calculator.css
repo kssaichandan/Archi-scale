@@ -161,10 +161,7 @@
     color: var(--text-danger);
 }
 
-/* Specific button placements */
-.calc-btn.zero {
-    grid-column: span 2;
-}
+/* Specific button placements removed */
 
 /* Collapsible Menu styling overrides */
 details.nav-category summary {
