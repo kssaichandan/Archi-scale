@@ -19,7 +19,6 @@
             <h1 class="logo">📐 Archi-Scale</h1>
         </div>
         <div class="header-right">
-            <button class="btn-icon" data-section="history" title="History" aria-label="History">🕒</button>
             <button class="btn-icon" data-section="favorites" title="Favorites" aria-label="Favorites">⭐</button>
             <button class="btn-icon" id="precisionBtn" title="Decimal places">10</button>
             <button class="btn-icon theme-toggle" id="themeToggle" aria-label="Toggle theme">☀️</button>
@@ -55,13 +54,17 @@
                     <button class="nav-item" data-section="concrete-mix">Concrete Mix Ratio</button>
                     <button class="nav-item" data-section="mortar-mix">Mortar Mix Ratio</button>
                     <button class="nav-item" data-section="structural-sizing">Structural Sizing</button>
-                    <button class="nav-item" data-section="board-feet">Board Feet</button>
-                    <button class="nav-item" data-section="roofing">Roofing Squares</button>
-                    <button class="nav-item" data-section="concrete">Concrete Volume</button>
                     <button class="nav-item" data-section="stair-calc">Stair Calculator</button>
                     <button class="nav-item" data-section="tile-calc">Tile Estimator</button>
                     <button class="nav-item" data-section="brick-calc">Brick Calculator</button>
                     <button class="nav-item" data-section="paint-calc">Paint Estimator</button>
+                </details>
+                <details class="nav-category">
+                    <summary class="nav-heading">🎓 Studio Tools</summary>
+                    <button class="nav-item" data-section="fsi-calc">FSI / FAR Calculator</button>
+                    <button class="nav-item" data-section="ramp-calc">Ramp & Accessibility</button>
+                    <button class="nav-item" data-section="light-vent">Light & Ventilation</button>
+                    <button class="nav-item" data-section="anthropometry">Anthropometry Ref</button>
                 </details>
                 <details class="nav-category">
                     <summary class="nav-heading">📐 Geometry</summary>
@@ -75,6 +78,10 @@
                     <button class="nav-item" data-section="material-densities">Material Densities</button>
                     <button class="nav-item" data-section="paper-sizes">Paper Sizes</button>
                     <button class="nav-item" data-section="scale-ref">Scale Reference</button>
+                </details>
+                <details class="nav-category">
+                    <summary class="nav-heading">⭐ More</summary>
+                    <button class="nav-item" data-section="history">History</button>
                 </details>
 
             </nav>
@@ -755,119 +762,116 @@
                 </div>
             </section>
 
-            <!-- ===== BOARD FEET ===== -->
-            <section class="section" id="section-board-feet">
+            <!-- ===== FSI / FAR CALCULATOR ===== -->
+            <section class="section" id="section-fsi-calc">
                 <div class="section-header">
-                    <h2>Board Feet Converter</h2>
-                    <button class="btn-star" data-fav="board-feet">☆</button>
+                    <h2>FSI / FAR Calculator</h2>
+                    <button class="btn-star" data-fav="fsi-calc">☆</button>
                 </div>
                 <div class="converter-card">
-                    <div class="converter-row">
+                    <div class="input-row-3">
                         <div class="input-group">
-                            <label>From</label>
-                            <input type="number" class="input-value" id="bf-from-val" placeholder="Enter value" step="any">
-                            <select class="input-unit" id="bf-from-unit">
-                                <option value="bf" selected>Board Feet</option>
-                                <option value="in3">Cubic Inches</option>
-                                <option value="cm3">Cubic cm</option>
-                                <option value="m3">Cubic meters</option>
-                                <option value="ft3">Cubic Feet</option>
+                            <label>Mode</label>
+                            <select class="input-unit" id="fsi-mode">
+                                <option value="max-area" selected>Find Max Built-up Area</option>
+                                <option value="current-fsi">Calculate Current FSI</option>
                             </select>
                         </div>
-                        <button class="btn-swap" aria-label="Swap">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3l4 4-4 4"/><path d="M3 7h18"/><path d="M7 21l-4-4 4-4"/><path d="M21 17H3"/></svg>
-                        </button>
                         <div class="input-group">
-                            <label>To</label>
-                            <input type="number" class="input-value" id="bf-to-val" placeholder="Result" step="any" readonly>
-                            <select class="input-unit" id="bf-to-unit">
-                                <option value="bf">Board Feet</option>
-                                <option value="in3">Cubic Inches</option>
-                                <option value="cm3" selected>Cubic cm</option>
-                                <option value="m3">Cubic meters</option>
-                                <option value="ft3">Cubic Feet</option>
-                            </select>
+                            <label>Plot Area</label>
+                            <input type="number" class="input-value" id="fsi-plot" placeholder="Enter area" step="any">
+                        </div>
+                        <div class="input-group" id="fsi-dynamic-input-group">
+                            <label id="fsi-dynamic-label">Allowed FSI</label>
+                            <input type="number" class="input-value" id="fsi-dynamic-val" placeholder="e.g. 2.5" step="any">
                         </div>
                     </div>
-                    <div class="result-display" id="board-feet-result">
-                        <span class="result-text">Enter a value to convert</span>
-                        <button class="btn-copy" title="Copy result">📋</button>
+                    <div class="result-display" id="fsi-result" style="margin-top: 15px; flex-direction: column; align-items: flex-start; text-align: left; height: auto; padding: 15px;">
+                        <span class="result-text">Enter plot area and FSI</span>
                     </div>
                 </div>
             </section>
 
-            <!-- ===== ROOFING SQUARES ===== -->
-            <section class="section" id="section-roofing">
+            <!-- ===== RAMP & ACCESSIBILITY ===== -->
+            <section class="section" id="section-ramp-calc">
                 <div class="section-header">
-                    <h2>Roofing Squares Converter</h2>
-                    <button class="btn-star" data-fav="roofing">☆</button>
+                    <h2>Ramp & Accessibility Calculator</h2>
+                    <button class="btn-star" data-fav="ramp-calc">☆</button>
                 </div>
                 <div class="converter-card">
-                    <div class="converter-row">
+                    <div class="input-row-3">
                         <div class="input-group">
-                            <label>From</label>
-                            <input type="number" class="input-value" id="roof-from-val" placeholder="Enter value" step="any">
-                            <select class="input-unit" id="roof-from-unit">
-                                <option value="sq" selected>Squares (100 ft²)</option>
-                                <option value="ft2">Square Feet</option>
-                                <option value="m2">Square Meters</option>
-                                <option value="yd2">Square Yards</option>
+                            <label>Height Difference (Rise)</label>
+                            <input type="number" class="input-value" id="ramp-rise" placeholder="e.g. 0.5" step="any">
+                        </div>
+                        <div class="input-group">
+                            <label>Unit</label>
+                            <select class="input-unit" id="ramp-unit">
+                                <option value="m" selected>Meters (m)</option>
+                                <option value="mm">Millimeters (mm)</option>
+                                <option value="ft">Feet (ft)</option>
                             </select>
                         </div>
-                        <button class="btn-swap" aria-label="Swap">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3l4 4-4 4"/><path d="M3 7h18"/><path d="M7 21l-4-4 4-4"/><path d="M21 17H3"/></svg>
-                        </button>
                         <div class="input-group">
-                            <label>To</label>
-                            <input type="number" class="input-value" id="roof-to-val" placeholder="Result" step="any" readonly>
-                            <select class="input-unit" id="roof-to-unit">
-                                <option value="sq">Squares (100 ft²)</option>
-                                <option value="ft2">Square Feet</option>
-                                <option value="m2" selected>Square Meters</option>
-                                <option value="yd2">Square Yards</option>
+                            <label>Required Slope</label>
+                            <select class="input-unit" id="ramp-slope" disabled>
+                                <option value="12" selected>1:12 (Standard Accessible)</option>
                             </select>
                         </div>
                     </div>
-                    <div class="result-display" id="roofing-result">
-                        <span class="result-text">Enter a value to convert</span>
-                        <button class="btn-copy" title="Copy result">📋</button>
+                    <div class="result-display" id="ramp-result" style="margin-top: 15px; flex-direction: column; align-items: flex-start; text-align: left; height: auto; padding: 15px; line-height: 1.6;">
+                        <span class="result-text">Enter the vertical rise to calculate ramp length</span>
                     </div>
                 </div>
             </section>
 
-            <!-- ===== CONCRETE VOLUME ===== -->
-            <section class="section" id="section-concrete">
+            <!-- ===== LIGHT & VENTILATION ===== -->
+            <section class="section" id="section-light-vent">
                 <div class="section-header">
-                    <h2>Concrete Volume Converter</h2>
-                    <button class="btn-star" data-fav="concrete">☆</button>
+                    <h2>Light & Ventilation Estimator</h2>
+                    <button class="btn-star" data-fav="light-vent">☆</button>
                 </div>
                 <div class="converter-card">
-                    <div class="converter-row">
+                    <p class="tool-description" style="color: var(--text-muted); font-size: 0.9em; margin-bottom: 15px;">Calculates thumb rules (10% floor area for light, 5% for ventilation) for habitable rooms.</p>
+                    <div class="input-row-3">
                         <div class="input-group">
-                            <label>From</label>
-                            <input type="number" class="input-value" id="concrete-from-val" placeholder="Enter value" step="any">
-                            <select class="input-unit" id="concrete-from-unit">
-                                <option value="yd3" selected>Cubic Yards</option>
-                                <option value="m3">Cubic Meters</option>
-                                <option value="ft3">Cubic Feet</option>
-                            </select>
+                            <label>Room Floor Area</label>
+                            <input type="number" class="input-value" id="light-area" placeholder="Enter area" step="any">
                         </div>
-                        <button class="btn-swap" aria-label="Swap">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3l4 4-4 4"/><path d="M3 7h18"/><path d="M7 21l-4-4 4-4"/><path d="M21 17H3"/></svg>
-                        </button>
                         <div class="input-group">
-                            <label>To</label>
-                            <input type="number" class="input-value" id="concrete-to-val" placeholder="Result" step="any" readonly>
-                            <select class="input-unit" id="concrete-to-unit">
-                                <option value="yd3">Cubic Yards</option>
-                                <option value="m3" selected>Cubic Meters</option>
-                                <option value="ft3">Cubic Feet</option>
+                            <label>Unit</label>
+                            <select class="input-unit" id="light-unit">
+                                <option value="m2" selected>m²</option>
+                                <option value="ft2">sq ft</option>
                             </select>
                         </div>
                     </div>
-                    <div class="result-display" id="concrete-result">
-                        <span class="result-text">Enter a value to convert</span>
-                        <button class="btn-copy" title="Copy result">📋</button>
+                    <div class="result-display" id="light-result" style="margin-top: 15px; flex-direction: column; align-items: flex-start; text-align: left; height: auto; padding: 15px; line-height: 1.6;">
+                        <span class="result-text">Enter floor area to estimate minimums</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ===== ANTHROPOMETRY REFERENCE ===== -->
+            <section class="section" id="section-anthropometry">
+                <div class="section-header">
+                    <h2>Anthropometry Quick Ref</h2>
+                    <button class="btn-star" data-fav="anthropometry">☆</button>
+                </div>
+                <div class="reference-table" id="anthropometry-table">
+                    <div class="table-container">
+                        <table>
+                            <thead><tr><th>Element</th><th>Minimum Standard Clearance</th></tr></thead>
+                            <tbody>
+                                <tr><td>Wheelchair Turning Radius</td><td>1500 mm (60")</td></tr>
+                                <tr><td>Two-person Passing Corridor</td><td>1200 mm (48")</td></tr>
+                                <tr><td>Standard Door Width</td><td>900 mm (36")</td></tr>
+                                <tr><td>Standard Kitchen Counter Height</td><td>900 mm (36")</td></tr>
+                                <tr><td>Standard Desk/Table Height</td><td>750 mm (30")</td></tr>
+                                <tr><td>Standard Stair Tread</td><td>250 mm - 300 mm (10" - 12")</td></tr>
+                                <tr><td>Standard Stair Riser</td><td>150 mm - 180 mm (6" - 7")</td></tr>
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </section>
@@ -1030,6 +1034,7 @@
                                 <option value="square">Square</option>
                                 <option value="rectangle">Rectangle</option>
                                 <option value="triangle">Triangle (Equilateral)</option>
+                                <option value="polygon">Regular Polygon (Custom)</option>
                             </select>
                         </div>
                         <div class="input-group">
@@ -1340,13 +1345,7 @@
                     <div class="input-row-3">
                         <div class="input-group">
                             <label>Number of Floors</label>
-                            <select class="input-unit" id="structural-floors">
-                                <option value="1">Ground Floor (G)</option>
-                                <option value="2">G + 1</option>
-                                <option value="3">G + 2</option>
-                                <option value="4" selected>G + 3</option>
-                                <option value="5">G + 4</option>
-                            </select>
+                            <input type="number" class="input-value" id="structural-floors" placeholder="e.g. 4 for G+3" step="1" value="4">
                         </div>
                         <div class="input-group">
                             <label>Column Span (m)</label>

@@ -84,7 +84,7 @@ function initPrecisionControl() {
 
 function fmt(val) {
     if (isNaN(val) || !isFinite(val)) return '—';
-    return parseFloat(val.toFixed(precision)).toString();
+    return Number(val).toFixed(precision);
 }
 
 // ==========================================
@@ -584,12 +584,12 @@ function doResize() {
 // CONSTRUCTION CONVERTERS
 // ==========================================
 function initConstructionConverters() {
-    wireConverter('bf', 'boardfeet', 'board-feet-result');
-    wireConverter('roof', 'roofing', 'roofing-result');
-    wireConverter('concrete', 'concrete', 'concrete-result');
     initConcreteMix();
     initMortarMix();
     initStructuralSizing();
+    initFSICalc();
+    initRampCalc();
+    initLightVent();
 }
 
 function wireConverter(prefix, category, resultId) {
@@ -648,6 +648,7 @@ function initConcreteMix() {
 
         resultEl.innerHTML = `
             <strong>Dry Volume Required:</strong> ${fmt(isFt3 ? dryVolM3 / 0.0283168 : dryVolM3)} ${unitSelect.value}<br>
+            <strong style="color:var(--primary-color);">Ratio breakdown — Cement: ${parts[0]} part, Sand: ${parts[1]} parts, Aggregate: ${parts[2]} parts</strong><br><br>
             <strong>Cement:</strong> ${fmt(cementBags)} bags (50kg)<br>
             <strong>Sand:</strong> ${fmt(isFt3 ? sandM3 / 0.0283168 : sandM3)} ${unitSelect.value}<br>
             <strong>Aggregate:</strong> ${fmt(isFt3 ? aggM3 / 0.0283168 : aggM3)} ${unitSelect.value}
@@ -687,6 +688,7 @@ function initMortarMix() {
 
         resultEl.innerHTML = `
             <strong>Dry Volume Required:</strong> ${fmt(isFt3 ? dryVolM3 / 0.0283168 : dryVolM3)} ${unitSelect.value}<br>
+            <strong style="color:var(--primary-color);">Ratio breakdown — Cement: ${parts[0]} part, Sand: ${parts[1]} parts</strong><br><br>
             <strong>Cement:</strong> ${fmt(cementBags)} bags (50kg)<br>
             <strong>Sand:</strong> ${fmt(isFt3 ? sandM3 / 0.0283168 : sandM3)} ${unitSelect.value}
         `;
@@ -698,13 +700,18 @@ function initMortarMix() {
 }
 
 function initStructuralSizing() {
-    const floorsSelect = document.getElementById('structural-floors');
+    const floorsInput = document.getElementById('structural-floors');
     const spanInput = document.getElementById('structural-span');
     const resultEl = document.getElementById('structural-sizing-result');
 
     const calc = () => {
-        const floors = parseInt(floorsSelect.value);
+        const floors = parseInt(floorsInput.value);
         const span = parseFloat(spanInput.value);
+
+        if (isNaN(floors) || floors < 1) {
+            resultEl.innerHTML = '<span class="result-text">Enter valid number of floors</span>';
+            return;
+        }
 
         let out = `<strong>Recommended Span:</strong> For a G+${floors-1} building, an economical column span is between <strong>3.0 meters and 4.5 meters</strong>.<br>`;
         
@@ -713,28 +720,114 @@ function initStructuralSizing() {
             const depth = Math.max(300, Math.ceil(rawDepth / 50) * 50);
             const width = Math.max(230, Math.ceil((depth / 2) / 10) * 10);
             
-            let colSize = '';
-            if (floors <= 2) colSize = '230 mm × 300 mm (9" × 12")';
-            else if (floors === 3) colSize = '300 mm × 300 mm (12" × 12")';
-            else if (floors === 4) colSize = '300 mm × 380 mm (12" × 15")';
-            else colSize = '300 mm × 450 mm (12" × 18")';
+            let colWidth = 300;
+            let colDepth = 300;
+            if (floors <= 2) { colWidth = 230; colDepth = 300; }
+            else if (floors === 3) { colWidth = 300; colDepth = 300; }
+            else if (floors === 4) { colWidth = 300; colDepth = 380; }
+            else { colWidth = 300; colDepth = 450 + ((floors-5)*50); }
+
+            const widthIn = fmt(width / 25.4);
+            const depthIn = fmt(depth / 25.4);
+            const colWidthIn = fmt(colWidth / 25.4);
+            const colDepthIn = fmt(colDepth / 25.4);
 
             if (span > 5) {
-                out += `<br><span style="color:var(--text-warning);"><strong>Warning:</strong> Span exceeds standard economical limits. A formal structural design is critical.</span><br>`;
+                out += `<br><span style="color:var(--text-warning);"><strong>Warning:</strong> Span exceeds standard economical limits.</span><br>`;
             }
 
             out += `
-                <br><strong>Estimated Beam Size:</strong> ${width} mm × ${depth} mm
-                <br><strong>Estimated Column Size:</strong> Min. ${colSize}
+                <br><strong>Estimated Beam Size:</strong> ${width} mm × ${depth} mm (${widthIn}" × ${depthIn}")
+                <br><strong>Estimated Column Size:</strong> Min. ${colWidth} mm × ${colDepth} mm (${colWidthIn}" × ${colDepthIn}")
             `;
         }
 
         resultEl.innerHTML = out;
     };
 
-    floorsSelect.addEventListener('change', calc);
+    floorsInput.addEventListener('input', calc);
     spanInput.addEventListener('input', calc);
-    calc(); // initial state
+    calc(); 
+}
+
+function initFSICalc() {
+    const mode = document.getElementById('fsi-mode');
+    const plot = document.getElementById('fsi-plot');
+    const dyn = document.getElementById('fsi-dynamic-val');
+    const label = document.getElementById('fsi-dynamic-label');
+    const res = document.getElementById('fsi-result');
+
+    const calc = () => {
+        const p = parseFloat(plot.value);
+        const d = parseFloat(dyn.value);
+        if (isNaN(p) || isNaN(d)) {
+            res.innerHTML = '<span class="result-text">Enter plot area and values</span>';
+            return;
+        }
+        if (mode.value === 'max-area') {
+            res.innerHTML = `<strong>Max Built-up Area:</strong> ${fmt(p * d)}`;
+        } else {
+            res.innerHTML = `<strong>Current FSI / FAR:</strong> ${fmt(d / p)}`;
+        }
+    };
+    
+    mode.addEventListener('change', () => {
+        label.textContent = mode.value === 'max-area' ? 'Allowed FSI' : 'Total Built-up Area';
+        calc();
+    });
+    plot.addEventListener('input', calc);
+    dyn.addEventListener('input', calc);
+}
+
+function initRampCalc() {
+    const rise = document.getElementById('ramp-rise');
+    const unit = document.getElementById('ramp-unit');
+    const res = document.getElementById('ramp-result');
+
+    const calc = () => {
+        const r = parseFloat(rise.value);
+        if (isNaN(r) || r <= 0) {
+            res.innerHTML = '<span class="result-text">Enter the vertical rise to calculate ramp length</span>';
+            return;
+        }
+        const run = r * 12; // 1:12 slope
+        const angle = Math.atan(1/12) * (180 / Math.PI);
+        let out = `
+            <strong>Required Ramp Length (Run):</strong> ${fmt(run)} ${unit.value}<br>
+            <strong>Slope Angle:</strong> ${fmt(angle)}°<br>
+        `;
+        
+        let runInMeters = run;
+        if (unit.value === 'mm') runInMeters = run / 1000;
+        else if (unit.value === 'ft') runInMeters = run * 0.3048;
+
+        if (runInMeters > 9) {
+            out += `<br><span style="color:var(--text-warning);"><strong>Notice:</strong> Ramp run exceeds 9 meters. Intermediate landings are required by most accessibility codes.</span>`;
+        }
+        res.innerHTML = out;
+    }
+    rise.addEventListener('input', calc);
+    unit.addEventListener('change', calc);
+}
+
+function initLightVent() {
+    const area = document.getElementById('light-area');
+    const unit = document.getElementById('light-unit');
+    const res = document.getElementById('light-result');
+
+    const calc = () => {
+        const a = parseFloat(area.value);
+        if (isNaN(a) || a <= 0) {
+            res.innerHTML = '<span class="result-text">Enter floor area to estimate minimums</span>';
+            return;
+        }
+        res.innerHTML = `
+            <strong>Min. Window Area (Light 10%):</strong> ${fmt(a * 0.1)} ${unit.value}<br>
+            <strong>Min. Openable Area (Ventilation 5%):</strong> ${fmt(a * 0.05)} ${unit.value}
+        `;
+    }
+    area.addEventListener('input', calc);
+    unit.addEventListener('change', calc);
 }
 
 // ==========================================
@@ -1047,6 +1140,12 @@ function initPerimeterCalc() {
                 out = `Perimeter = ${fmt(p)} ${u}`;
                 break;
             }
+            case 'polygon': {
+                if (isNaN(v2)) return;
+                p = v1 * v2;
+                out = `Perimeter = ${fmt(p)} ${u}`;
+                break;
+            }
         }
         
         result.querySelector('.result-text').textContent = out;
@@ -1062,12 +1161,16 @@ function initPerimeterCalc() {
             l1.textContent = 'Side Length';
             dim2Group.style.display = 'none';
         } else if (s === 'rectangle') {
-            l1.textContent = 'Width';
-            l2.textContent = 'Height';
+            l1.textContent = 'Length';
+            l2.textContent = 'Width';
             dim2Group.style.display = 'flex';
         } else if (s === 'triangle') {
             l1.textContent = 'Side Length';
             dim2Group.style.display = 'none';
+        } else if (s === 'polygon') {
+            l1.textContent = 'Number of Sides';
+            l2.textContent = 'Side Length';
+            dim2Group.style.display = 'flex';
         }
         calculate();
     });
