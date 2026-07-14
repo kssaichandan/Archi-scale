@@ -1,6 +1,6 @@
 // Tab navigation system
 export function initTabs() {
-    const navItems = document.querySelectorAll('.nav-item');
+    const navItems = document.querySelectorAll('.nav-item, .header-right [data-section]');
     const sections = document.querySelectorAll('.section');
     const sidebar = document.getElementById('sidebar');
     const hamburger = document.getElementById('hamburger');
@@ -15,8 +15,10 @@ export function initTabs() {
             const sectionId = item.dataset.section;
 
             // Update nav
-            navItems.forEach(n => n.classList.remove('active'));
-            item.classList.add('active');
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            if (item.classList.contains('nav-item')) {
+                item.classList.add('active');
+            }
 
             // Update sections
             sections.forEach(s => s.classList.remove('active'));

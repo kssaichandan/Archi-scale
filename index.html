@@ -19,6 +19,8 @@
             <h1 class="logo">📐 Archi-Scale</h1>
         </div>
         <div class="header-right">
+            <button class="btn-icon" data-section="history" title="History" aria-label="History">🕒</button>
+            <button class="btn-icon" data-section="favorites" title="Favorites" aria-label="Favorites">⭐</button>
             <button class="btn-icon" id="precisionBtn" title="Decimal places">10</button>
             <button class="btn-icon theme-toggle" id="themeToggle" aria-label="Toggle theme">☀️</button>
         </div>
@@ -50,6 +52,9 @@
                 </details>
                 <details class="nav-category">
                     <summary class="nav-heading">🧱 Construction</summary>
+                    <button class="nav-item" data-section="concrete-mix">Concrete Mix Ratio</button>
+                    <button class="nav-item" data-section="mortar-mix">Mortar Mix Ratio</button>
+                    <button class="nav-item" data-section="structural-sizing">Structural Sizing</button>
                     <button class="nav-item" data-section="board-feet">Board Feet</button>
                     <button class="nav-item" data-section="roofing">Roofing Squares</button>
                     <button class="nav-item" data-section="concrete">Concrete Volume</button>
@@ -71,11 +76,7 @@
                     <button class="nav-item" data-section="paper-sizes">Paper Sizes</button>
                     <button class="nav-item" data-section="scale-ref">Scale Reference</button>
                 </details>
-                <details class="nav-category">
-                    <summary class="nav-heading">⭐ More</summary>
-                    <button class="nav-item" data-section="history">History</button>
-                    <button class="nav-item" data-section="favorites">Favorites</button>
-                </details>
+
             </nav>
         </aside>
 
@@ -1252,6 +1253,108 @@
                     <div class="result-display" id="paint-result" style="margin-top: 15px;">
                         <span class="result-text">Enter wall area to estimate paint</span>
                         <button class="btn-copy" title="Copy result">📋</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ===== CONCRETE MIX RATIO ===== -->
+            <section class="section" id="section-concrete-mix">
+                <div class="section-header">
+                    <h2>Concrete Mix Ratio</h2>
+                    <button class="btn-star" data-fav="concrete-mix">☆</button>
+                </div>
+                <div class="converter-card">
+                    <div class="input-row-3">
+                        <div class="input-group">
+                            <label>Wet Volume Required</label>
+                            <input type="number" class="input-value" id="concrete-mix-vol" placeholder="e.g. 10" step="any">
+                        </div>
+                        <div class="input-group">
+                            <label>Volume Unit</label>
+                            <select class="input-unit" id="concrete-mix-unit">
+                                <option value="m3" selected>m³</option>
+                                <option value="ft3">ft³</option>
+                            </select>
+                        </div>
+                        <div class="input-group">
+                            <label>Concrete Grade</label>
+                            <select class="input-unit" id="concrete-mix-grade">
+                                <option value="1:5:10">M5 (1:5:10) Lean</option>
+                                <option value="1:4:8">M7.5 (1:4:8) PCC</option>
+                                <option value="1:3:6">M10 (1:3:6) Foundation</option>
+                                <option value="1:2:4">M15 (1:2:4) Floors</option>
+                                <option value="1:1.5:3" selected>M20 (1:1.5:3) Slabs/Beams</option>
+                                <option value="1:1:2">M25 (1:1:2) Columns</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="result-display" id="concrete-mix-result" style="margin-top: 15px; flex-direction: column; align-items: flex-start; text-align: left; height: auto; padding: 15px;">
+                        <span class="result-text">Enter volume to calculate raw materials</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ===== MORTAR MIX RATIO ===== -->
+            <section class="section" id="section-mortar-mix">
+                <div class="section-header">
+                    <h2>Mortar Mix Ratio</h2>
+                    <button class="btn-star" data-fav="mortar-mix">☆</button>
+                </div>
+                <div class="converter-card">
+                    <div class="input-row-3">
+                        <div class="input-group">
+                            <label>Wet Volume Required</label>
+                            <input type="number" class="input-value" id="mortar-mix-vol" placeholder="e.g. 5" step="any">
+                        </div>
+                        <div class="input-group">
+                            <label>Volume Unit</label>
+                            <select class="input-unit" id="mortar-mix-unit">
+                                <option value="m3" selected>m³</option>
+                                <option value="ft3">ft³</option>
+                            </select>
+                        </div>
+                        <div class="input-group">
+                            <label>Application</label>
+                            <select class="input-unit" id="mortar-mix-app">
+                                <option value="1:3">Ceiling Plaster (1:3)</option>
+                                <option value="1:4" selected>External Plaster / Tile Bed (1:4)</option>
+                                <option value="1:5">Internal Plaster (1:5)</option>
+                                <option value="1:6">Brick Masonry (1:6)</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="result-display" id="mortar-mix-result" style="margin-top: 15px; flex-direction: column; align-items: flex-start; text-align: left; height: auto; padding: 15px;">
+                        <span class="result-text">Enter volume to calculate cement & sand</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ===== STRUCTURAL SIZING (THUMB RULES) ===== -->
+            <section class="section" id="section-structural-sizing">
+                <div class="section-header">
+                    <h2>Structural Sizing (Thumb Rules)</h2>
+                    <button class="btn-star" data-fav="structural-sizing">☆</button>
+                </div>
+                <div class="converter-card">
+                    <p class="tool-description" style="color: var(--text-warning); font-size: 0.9em; font-weight: 500;">⚠️ Disclaimer: These are preliminary estimates only. Formal design must be verified by a structural engineer as per IS 456.</p>
+                    <div class="input-row-3">
+                        <div class="input-group">
+                            <label>Number of Floors</label>
+                            <select class="input-unit" id="structural-floors">
+                                <option value="1">Ground Floor (G)</option>
+                                <option value="2">G + 1</option>
+                                <option value="3">G + 2</option>
+                                <option value="4" selected>G + 3</option>
+                                <option value="5">G + 4</option>
+                            </select>
+                        </div>
+                        <div class="input-group">
+                            <label>Column Span (m)</label>
+                            <input type="number" class="input-value" id="structural-span" placeholder="e.g. 3.0" step="any">
+                        </div>
+                    </div>
+                    <div class="result-display" id="structural-sizing-result" style="margin-top: 15px; flex-direction: column; align-items: flex-start; text-align: left; height: auto; padding: 15px; line-height: 1.6;">
+                        <span class="result-text">Select floors and enter span to get sizing estimates</span>
                     </div>
                 </div>
             </section>

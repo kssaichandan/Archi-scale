@@ -587,6 +587,9 @@ function initConstructionConverters() {
     wireConverter('bf', 'boardfeet', 'board-feet-result');
     wireConverter('roof', 'roofing', 'roofing-result');
     wireConverter('concrete', 'concrete', 'concrete-result');
+    initConcreteMix();
+    initMortarMix();
+    initStructuralSizing();
 }
 
 function wireConverter(prefix, category, resultId) {
@@ -614,6 +617,124 @@ function wireConverter(prefix, category, resultId) {
     fromVal.addEventListener('input', convert_);
     fromUnit.addEventListener('change', convert_);
     toUnit.addEventListener('change', convert_);
+}
+
+function initConcreteMix() {
+    const volInput = document.getElementById('concrete-mix-vol');
+    const unitSelect = document.getElementById('concrete-mix-unit');
+    const gradeSelect = document.getElementById('concrete-mix-grade');
+    const resultEl = document.getElementById('concrete-mix-result');
+
+    const calc = () => {
+        const val = parseFloat(volInput.value);
+        if (isNaN(val) || val <= 0) {
+            resultEl.innerHTML = '<span class="result-text">Enter volume to calculate raw materials</span>';
+            return;
+        }
+
+        const isFt3 = unitSelect.value === 'ft3';
+        const volM3 = isFt3 ? val * 0.0283168 : val;
+        
+        const dryVolM3 = volM3 * 1.54;
+        const ratioStr = gradeSelect.value;
+        const parts = ratioStr.split(':').map(Number);
+        const sum = parts[0] + parts[1] + parts[2];
+
+        const cementM3 = (dryVolM3 / sum) * parts[0];
+        const sandM3 = (dryVolM3 / sum) * parts[1];
+        const aggM3 = (dryVolM3 / sum) * parts[2];
+
+        const cementBags = cementM3 / 0.0347;
+
+        resultEl.innerHTML = `
+            <strong>Dry Volume Required:</strong> ${fmt(isFt3 ? dryVolM3 / 0.0283168 : dryVolM3)} ${unitSelect.value}<br>
+            <strong>Cement:</strong> ${fmt(cementBags)} bags (50kg)<br>
+            <strong>Sand:</strong> ${fmt(isFt3 ? sandM3 / 0.0283168 : sandM3)} ${unitSelect.value}<br>
+            <strong>Aggregate:</strong> ${fmt(isFt3 ? aggM3 / 0.0283168 : aggM3)} ${unitSelect.value}
+        `;
+    };
+
+    volInput.addEventListener('input', calc);
+    unitSelect.addEventListener('change', calc);
+    gradeSelect.addEventListener('change', calc);
+}
+
+function initMortarMix() {
+    const volInput = document.getElementById('mortar-mix-vol');
+    const unitSelect = document.getElementById('mortar-mix-unit');
+    const appSelect = document.getElementById('mortar-mix-app');
+    const resultEl = document.getElementById('mortar-mix-result');
+
+    const calc = () => {
+        const val = parseFloat(volInput.value);
+        if (isNaN(val) || val <= 0) {
+            resultEl.innerHTML = '<span class="result-text">Enter volume to calculate cement & sand</span>';
+            return;
+        }
+
+        const isFt3 = unitSelect.value === 'ft3';
+        const volM3 = isFt3 ? val * 0.0283168 : val;
+        
+        const dryVolM3 = volM3 * 1.33;
+        const ratioStr = appSelect.value;
+        const parts = ratioStr.split(':').map(Number);
+        const sum = parts[0] + parts[1];
+
+        const cementM3 = (dryVolM3 / sum) * parts[0];
+        const sandM3 = (dryVolM3 / sum) * parts[1];
+
+        const cementBags = cementM3 / 0.0347;
+
+        resultEl.innerHTML = `
+            <strong>Dry Volume Required:</strong> ${fmt(isFt3 ? dryVolM3 / 0.0283168 : dryVolM3)} ${unitSelect.value}<br>
+            <strong>Cement:</strong> ${fmt(cementBags)} bags (50kg)<br>
+            <strong>Sand:</strong> ${fmt(isFt3 ? sandM3 / 0.0283168 : sandM3)} ${unitSelect.value}
+        `;
+    };
+
+    volInput.addEventListener('input', calc);
+    unitSelect.addEventListener('change', calc);
+    appSelect.addEventListener('change', calc);
+}
+
+function initStructuralSizing() {
+    const floorsSelect = document.getElementById('structural-floors');
+    const spanInput = document.getElementById('structural-span');
+    const resultEl = document.getElementById('structural-sizing-result');
+
+    const calc = () => {
+        const floors = parseInt(floorsSelect.value);
+        const span = parseFloat(spanInput.value);
+
+        let out = `<strong>Recommended Span:</strong> For a G+${floors-1} building, an economical column span is between <strong>3.0 meters and 4.5 meters</strong>.<br>`;
+        
+        if (!isNaN(span) && span > 0) {
+            const rawDepth = (span * 1000) / 12;
+            const depth = Math.max(300, Math.ceil(rawDepth / 50) * 50);
+            const width = Math.max(230, Math.ceil((depth / 2) / 10) * 10);
+            
+            let colSize = '';
+            if (floors <= 2) colSize = '230 mm × 300 mm (9" × 12")';
+            else if (floors === 3) colSize = '300 mm × 300 mm (12" × 12")';
+            else if (floors === 4) colSize = '300 mm × 380 mm (12" × 15")';
+            else colSize = '300 mm × 450 mm (12" × 18")';
+
+            if (span > 5) {
+                out += `<br><span style="color:var(--text-warning);"><strong>Warning:</strong> Span exceeds standard economical limits. A formal structural design is critical.</span><br>`;
+            }
+
+            out += `
+                <br><strong>Estimated Beam Size:</strong> ${width} mm × ${depth} mm
+                <br><strong>Estimated Column Size:</strong> Min. ${colSize}
+            `;
+        }
+
+        resultEl.innerHTML = out;
+    };
+
+    floorsSelect.addEventListener('change', calc);
+    spanInput.addEventListener('input', calc);
+    calc(); // initial state
 }
 
 // ==========================================
