@@ -2,6 +2,20 @@
    RESPONSIVE DESIGN - Mobile, Tablet, Desktop
    ============================================ */
 
+/* Keep every responsive child inside its parent before the mobile rules
+   change the direction of the form rows. */
+.input-group,
+.converter-row > *,
+.input-row-3 > * {
+    min-width: 0;
+}
+
+.table-container {
+    max-width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
 /* Tablet: 768px - 1024px */
 @media (max-width: 1024px) {
     .nav-item {
@@ -13,14 +27,88 @@
 /* Mobile: below 768px */
 @media (max-width: 768px) {
 
+    body {
+        overflow-x: hidden;
+    }
+
+    .header {
+        padding: 0 16px;
+    }
+
+    .header-left,
+    .header-right {
+        gap: 8px;
+        min-width: 0;
+    }
+
+    .logo {
+        min-width: 0;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .header-right {
+        flex-shrink: 0;
+    }
+
+    .btn-icon {
+        min-width: 40px;
+        min-height: 40px;
+        padding: 6px 8px;
+    }
+
+    .sidebar {
+        width: min(280px, calc(100vw - 24px));
+    }
+
+    .nav-item {
+        min-height: 44px;
+        padding-top: 10px;
+        padding-bottom: 10px;
+    }
+
     .main-content {
         padding: 16px;
+        padding-bottom: calc(88px + env(safe-area-inset-bottom));
+    }
+
+    .section-header {
+        align-items: flex-start;
+        gap: 12px;
+    }
+
+    .section-header h2 {
+        min-width: 0;
+        line-height: 1.3;
+    }
+
+    .btn-star {
+        flex-shrink: 0;
+        min-width: 44px;
+        min-height: 44px;
+    }
+
+    .converter-card,
+    .reference-table {
+        width: 100%;
     }
 
     .converter-row {
         flex-direction: column;
         gap: 12px;
     }
+
+    .converter-row > .input-group,
+    .input-row-3 > .input-group {
+        width: 100%;
+        flex: 1 1 auto !important;
+    }
+
+    .input-row-3 > .btn-danger {
+        align-self: stretch !important;
+        min-height: 44px;
+    }
+
     .btn-swap {
         align-self: center;
         transform: rotate(90deg);
@@ -40,6 +128,20 @@
     .scale-presets, .imperial-scales {
         gap: 4px;
     }
+
+    .scale-tabs,
+    .tabs-group {
+        gap: 4px;
+    }
+
+    .scale-tab,
+    .tab-btn {
+        min-width: 0;
+        min-height: 44px;
+        padding: 8px 10px;
+        line-height: 1.25;
+    }
+
     .preset-btn {
         padding: 10px 12px;
         font-size: 0.85rem;
@@ -48,9 +150,13 @@
     
     .custom-scale-row {
         flex-direction: column;
-        align-items: center;
-        text-align: center;
+        align-items: stretch;
+        text-align: left;
         gap: 4px;
+    }
+
+    .custom-scale-row label {
+        align-self: flex-start;
     }
 
     .paper-grid {
@@ -68,6 +174,25 @@
     .resize-percentage {
         font-size: 2rem;
     }
+
+    .result-display {
+        align-items: flex-start;
+        gap: 8px;
+    }
+
+    .result-text {
+        min-width: 0;
+        overflow-wrap: anywhere;
+        text-align: left;
+    }
+
+    .reference-table {
+        padding: 16px;
+    }
+
+    .ref-table {
+        min-width: 520px;
+    }
 }
 
 /* Small phones: below 480px */
@@ -75,15 +200,49 @@
     .header {
         padding: 0 12px;
     }
+
+    .header-left,
+    .header-right {
+        gap: 4px;
+    }
+
+    .hamburger {
+        flex-shrink: 0;
+    }
+
     .logo {
         font-size: 1.1rem;
     }
+
+    .btn-icon {
+        min-width: 36px;
+        width: 36px;
+        padding: 6px 4px;
+    }
+
     .main-content {
         padding: 12px;
+        padding-bottom: calc(84px + env(safe-area-inset-bottom));
     }
+
     .converter-card {
         padding: 16px;
     }
+
+    .reference-table {
+        padding: 12px;
+    }
+
+    .scale-tabs,
+    .tabs-group {
+        flex-direction: column;
+    }
+
+    .scale-tab,
+    .tab-btn {
+        width: 100%;
+    }
+
     .paper-grid {
         grid-template-columns: 1fr;
     }
@@ -92,5 +251,17 @@
         gap: 4px;
         text-align: center;
     }
-}
 
+    .history-item {
+        align-items: flex-start;
+    }
+
+    .history-item .hist-conversion {
+        min-width: 100%;
+        order: 3;
+    }
+
+    .history-item .hist-time {
+        margin-left: auto;
+    }
+}
