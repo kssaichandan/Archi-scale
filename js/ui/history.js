@@ -4,11 +4,12 @@ const MAX_HISTORY = 20;
 
 let history = JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]');
 
-export function addToHistory(type, fromVal, fromUnit, toVal, toUnit) {
+export function addToHistory(type, fromVal, fromUnit = '', toVal = '', toUnit = '') {
+    const formatValue = (value, unit) => [value, unit].filter(Boolean).join(' ');
     const entry = {
         type,
-        from: `${fromVal} ${fromUnit}`,
-        to: `${toVal} ${toUnit}`,
+        from: formatValue(fromVal, fromUnit),
+        to: formatValue(toVal, toUnit),
         time: new Date().toLocaleTimeString(),
     };
     history.unshift(entry);

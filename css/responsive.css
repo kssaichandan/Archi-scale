@@ -59,6 +59,7 @@
 
     .sidebar {
         width: min(280px, calc(100vw - 24px));
+        left: -100%;
     }
 
     .nav-item {

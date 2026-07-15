@@ -11,6 +11,27 @@ import { initTabs } from './ui/tabs.js';
 
 let precision = 6;
 
+const NON_NEGATIVE_CATEGORIES = new Set(['length', 'area', 'volume', 'mass', 'pressure', 'density']);
+const CEMENT_BAG_VOLUME_M3 = 50 / 1440; // 50 kg bag at 1,440 kg/m³ nominal bulk density
+const US_GALLON_LITERS = 3.785411784;
+
+function unitLabel(unit) {
+    return {
+        mm: 'mm', cm: 'cm', m: 'm', km: 'km', in: 'in', ft: 'ft', yd: 'yd',
+        mm2: 'mm²', cm2: 'cm²', m2: 'm²', km2: 'km²', ha: 'ha', acre: 'ac', in2: 'in²', ft2: 'ft²', yd2: 'yd²',
+        mm3: 'mm³', cm3: 'cm³', m3: 'm³', L: 'L', mL: 'mL', gal: 'US gal', in3: 'in³', ft3: 'ft³', yd3: 'yd³',
+        mg: 'mg', g: 'g', kg: 'kg', t: 't', oz: 'oz', lb: 'lb', st: 'st', C: '°C', F: '°F', K: 'K'
+    }[unit] || unit;
+}
+
+function validPositive(value) {
+    return Number.isFinite(value) && value > 0;
+}
+
+function validNonNegative(value) {
+    return Number.isFinite(value) && value >= 0;
+}
+
 document.addEventListener('DOMContentLoaded', () => {
     // Safely prevent long overflowing numbers across all converters
     document.addEventListener('input', (e) => {
@@ -112,7 +133,7 @@ function initStandardConverters() {
 
         const doConvert = () => {
             const val = parseFloat(fromValEl.value);
-            if (isNaN(val) || fromValEl.value === '') {
+            if (isNaN(val) || fromValEl.value === '' || (NON_NEGATIVE_CATEGORIES.has(cfg.category) && val < 0)) {
                 toValEl.value = '';
                 resultEl.querySelector('.result-text').textContent = 'Enter a value to convert';
                 if (formulaEl) formulaEl.textContent = '';
@@ -121,6 +142,12 @@ function initStandardConverters() {
             const from = fromUnitEl.value;
             const to = toUnitEl.value;
             const result = convert(cfg.category, val, from, to);
+            if (!Number.isFinite(result)) {
+                toValEl.value = '';
+                resultEl.querySelector('.result-text').textContent = 'Enter a physically valid value';
+                if (formulaEl) formulaEl.textContent = '';
+                return;
+            }
             const formatted = fmt(result);
             toValEl.value = formatted;
 
@@ -166,7 +193,7 @@ function getTemperatureFormula(val, from, to, result) {
 // SWAP BUTTONS - scoped to converter-row
 // ==========================================
 function initSwapButtons() {
-    document.querySelectorAll('.btn-swap').forEach(btn => {
+    document.querySelectorAll('.btn-swap:not(#custom-scale-swap)').forEach(btn => {
         btn.addEventListener('click', () => {
             const row = btn.closest('.converter-row');
             if (!row) return;
@@ -243,7 +270,7 @@ function doMetricScaleConvert() {
     const toUnit = document.getElementById('scale-metric-to-unit').value;
     const resultEl = document.getElementById('scale-metric-result');
 
-    if (isNaN(val)) {
+    if (!validNonNegative(val)) {
         document.getElementById('scale-metric-to-val').value = '';
         resultEl.querySelector('.result-text').textContent = 'Enter a value to convert';
         return;
@@ -252,7 +279,7 @@ function doMetricScaleConvert() {
     let activeScale = currentMetricScale;
     if (activeScale === 'custom') {
         activeScale = parseFloat(document.getElementById('metric-scale-custom-val').value);
-        if (isNaN(activeScale) || activeScale <= 0) {
+        if (!validPositive(activeScale)) {
             document.getElementById('scale-metric-to-val').value = '';
             resultEl.querySelector('.result-text').textContent = 'Enter a valid custom scale';
             return;
@@ -323,7 +350,7 @@ function doImpScaleConvert() {
     const toUnit = document.getElementById('imp-scale-to-unit').value;
     const resultEl = document.getElementById('scale-imperial-result');
 
-    if (isNaN(val)) {
+    if (!validPositive(val)) {
         document.getElementById('imp-scale-to-val').value = '';
         resultEl.querySelector('.result-text').textContent = 'Enter a value to convert';
         return;
@@ -333,7 +360,7 @@ function doImpScaleConvert() {
     let ratioText = '';
     if (activeScale === 'custom') {
         activeScale = parseFloat(document.getElementById('imp-scale-custom-val').value);
-        if (isNaN(activeScale) || activeScale <= 0) {
+        if (!validPositive(activeScale)) {
             document.getElementById('imp-scale-to-val').value = '';
             resultEl.querySelector('.result-text').textContent = 'Enter a valid custom scale';
             return;
@@ -343,9 +370,9 @@ function doImpScaleConvert() {
         ratioText = `1/${activeScale}" = 1'-0"`;
     }
 
-    const toInches = { ft: 12, in: 1, m: 39.3701 };
+    const toInches = { ft: 12, in: 1, m: 1 / 0.0254 };
     const drawingInches = (val * toInches[fromUnit]) / activeScale;
-    const fromInches = { in: 1, ft: 1/12, mm: 25.4, cm: 2.54 };
+    const fromInches = { in: 1, ft: 1 / 12, mm: 0.001 / 0.0254, cm: 0.01 / 0.0254 };
     const result = drawingInches * fromInches[toUnit];
     const formatted = fmt(result);
     document.getElementById('imp-scale-to-val').value = formatted;
@@ -404,7 +431,7 @@ function doCustomScaleConvert() {
     const fromUnit = fromUnitEl.value;
     const toUnit = toUnitEl.value;
 
-    if (isNaN(val) || isNaN(ratio) || ratio === 0) {
+    if (!validPositive(val) || !validPositive(ratio)) {
         toValEl.value = '';
         resultEl.querySelector('.result-text').textContent = 'Enter a value and ratio to convert';
         return;
@@ -444,7 +471,7 @@ function doReverseScale() {
     const nearestEl = document.getElementById('nearest-standard');
     const errorEl = document.getElementById('scale-error');
 
-    if (isNaN(drawing) || isNaN(real) || drawing === 0) {
+    if (!validPositive(drawing) || !validPositive(real)) {
         scaleEl.textContent = '—';
         nearestEl.textContent = '';
         errorEl.textContent = '';
@@ -453,13 +480,13 @@ function doReverseScale() {
 
     const toMm = { mm: 1, cm: 10, m: 1000, km: 1000000, in: 25.4, ft: 304.8, yd: 914.4 };
     const scale = (real * toMm[realUnit]) / (drawing * toMm[drawingUnit]);
-    scaleEl.textContent = Math.round(scale);
+    scaleEl.textContent = fmt(scale);
 
     const allScales = [1, 2, 5, 10, 20, 25, 50, 100, 200, 250, 500, 1000, 1250, 2500, 5000];
     let nearest = allScales[0];
     let minDiff = Infinity;
     for (const s of allScales) {
-        const diff = Math.abs(s - scale);
+        const diff = Math.abs(s - scale) / s;
         if (diff < minDiff) { minDiff = diff; nearest = s; }
     }
 
@@ -497,7 +524,7 @@ function doPaperFit() {
     const sizeEl = document.getElementById('paper-drawing-size');
     const gridEl = document.getElementById('paper-fit-grid');
 
-    if (isNaN(w) || isNaN(h) || isNaN(scale) || scale <= 0) {
+    if (!validPositive(w) || !validPositive(h) || !validPositive(scale)) {
         sizeEl.textContent = '';
         gridEl.innerHTML = '';
         return;
@@ -559,7 +586,7 @@ function doResize() {
     const pctEl = document.getElementById('resize-percentage');
     const detEl = document.getElementById('resize-detail');
 
-    if (isNaN(val) || isNaN(from) || isNaN(to) || from <= 0 || to <= 0) {
+    if (!validPositive(val) || !validPositive(from) || !validPositive(to)) {
         pctEl.textContent = '—';
         detEl.textContent = '';
         return;
@@ -632,26 +659,32 @@ function initConcreteMix() {
             return;
         }
 
-        const isFt3 = unitSelect.value === 'ft3';
-        const volM3 = isFt3 ? val * 0.0283168 : val;
+        const outputUnit = unitSelect.value;
+        const volM3 = convert('volume', val, outputUnit, 'm3');
+        const outputVolume = value => fmt(convert('volume', value, 'm3', outputUnit));
         
         const dryVolM3 = volM3 * 1.54;
         const ratioStr = gradeSelect.value;
         const parts = ratioStr.split(':').map(Number);
         const sum = parts[0] + parts[1] + parts[2];
+        if (parts.length !== 3 || parts.some(part => !validPositive(part)) || !validPositive(sum)) {
+            resultEl.innerHTML = '<span class="result-text">Select a valid concrete mix ratio</span>';
+            return;
+        }
 
         const cementM3 = (dryVolM3 / sum) * parts[0];
         const sandM3 = (dryVolM3 / sum) * parts[1];
         const aggM3 = (dryVolM3 / sum) * parts[2];
 
-        const cementBags = cementM3 / 0.0347;
+        const cementBags = cementM3 / CEMENT_BAG_VOLUME_M3;
 
         resultEl.innerHTML = `
-            <strong>Dry Volume Required:</strong> ${fmt(isFt3 ? dryVolM3 / 0.0283168 : dryVolM3)} ${unitSelect.value}<br>
+            <strong>Dry Volume Required:</strong> ${outputVolume(dryVolM3)} ${unitLabel(outputUnit)}<br>
             <strong style="color:var(--primary-color);">Ratio breakdown — Cement: ${parts[0]} part, Sand: ${parts[1]} parts, Aggregate: ${parts[2]} parts</strong><br><br>
             <strong>Cement:</strong> ${fmt(cementBags)} bags (50kg)<br>
-            <strong>Sand:</strong> ${fmt(isFt3 ? sandM3 / 0.0283168 : sandM3)} ${unitSelect.value}<br>
-            <strong>Aggregate:</strong> ${fmt(isFt3 ? aggM3 / 0.0283168 : aggM3)} ${unitSelect.value}
+            <strong>Sand:</strong> ${outputVolume(sandM3)} ${unitLabel(outputUnit)}<br>
+            <strong>Aggregate:</strong> ${outputVolume(aggM3)} ${unitLabel(outputUnit)}
+            <br><small>Estimate assumptions: dry-volume factor 1.54 and 50 kg cement-bag volume ${fmt(CEMENT_BAG_VOLUME_M3)} m³.</small>
         `;
     };
 
@@ -673,24 +706,30 @@ function initMortarMix() {
             return;
         }
 
-        const isFt3 = unitSelect.value === 'ft3';
-        const volM3 = isFt3 ? val * 0.0283168 : val;
+        const outputUnit = unitSelect.value;
+        const volM3 = convert('volume', val, outputUnit, 'm3');
+        const outputVolume = value => fmt(convert('volume', value, 'm3', outputUnit));
         
         const dryVolM3 = volM3 * 1.33;
         const ratioStr = appSelect.value;
         const parts = ratioStr.split(':').map(Number);
         const sum = parts[0] + parts[1];
+        if (parts.length !== 2 || parts.some(part => !validPositive(part)) || !validPositive(sum)) {
+            resultEl.innerHTML = '<span class="result-text">Select a valid mortar mix ratio</span>';
+            return;
+        }
 
         const cementM3 = (dryVolM3 / sum) * parts[0];
         const sandM3 = (dryVolM3 / sum) * parts[1];
 
-        const cementBags = cementM3 / 0.0347;
+        const cementBags = cementM3 / CEMENT_BAG_VOLUME_M3;
 
         resultEl.innerHTML = `
-            <strong>Dry Volume Required:</strong> ${fmt(isFt3 ? dryVolM3 / 0.0283168 : dryVolM3)} ${unitSelect.value}<br>
+            <strong>Dry Volume Required:</strong> ${outputVolume(dryVolM3)} ${unitLabel(outputUnit)}<br>
             <strong style="color:var(--primary-color);">Ratio breakdown — Cement: ${parts[0]} part, Sand: ${parts[1]} parts</strong><br><br>
             <strong>Cement:</strong> ${fmt(cementBags)} bags (50kg)<br>
-            <strong>Sand:</strong> ${fmt(isFt3 ? sandM3 / 0.0283168 : sandM3)} ${unitSelect.value}
+            <strong>Sand:</strong> ${outputVolume(sandM3)} ${unitLabel(outputUnit)}
+            <br><small>Estimate assumption: dry-volume factor 1.33.</small>
         `;
     };
 
@@ -760,13 +799,14 @@ function initFSICalc() {
     const calc = () => {
         const p = parseFloat(plot.value);
         const d = parseFloat(dyn.value);
-        if (isNaN(p) || isNaN(d)) {
+        if (!validPositive(p) || !Number.isFinite(d) || d < 0) {
             res.innerHTML = '<span class="result-text">Enter plot area and values</span>';
             return;
         }
         if (mode.value === 'max-area') {
             res.innerHTML = `<strong>Max Built-up Area:</strong> ${fmt(p * d)}`;
         } else {
+            if (p <= 0) return;
             res.innerHTML = `<strong>Current FSI / FAR:</strong> ${fmt(d / p)}`;
         }
     };
@@ -786,23 +826,21 @@ function initRampCalc() {
 
     const calc = () => {
         const r = parseFloat(rise.value);
-        if (isNaN(r) || r <= 0) {
+        if (!validPositive(r)) {
             res.innerHTML = '<span class="result-text">Enter the vertical rise to calculate ramp length</span>';
             return;
         }
-        const run = r * 12; // 1:12 slope
+        const riseM = convert('length', r, unit.value, 'm');
+        const run = r * 12; // 1:12 running slope: 1 unit rise per 12 units run
         const angle = Math.atan(1/12) * (180 / Math.PI);
         let out = `
             <strong>Required Ramp Length (Run):</strong> ${fmt(run)} ${unit.value}<br>
             <strong>Slope Angle:</strong> ${fmt(angle)}°<br>
         `;
         
-        let runInMeters = run;
-        if (unit.value === 'mm') runInMeters = run / 1000;
-        else if (unit.value === 'ft') runInMeters = run * 0.3048;
-
-        if (runInMeters > 9) {
-            out += `<br><span style="color:var(--text-warning);"><strong>Notice:</strong> Ramp run exceeds 9 meters. Intermediate landings are required by most accessibility codes.</span>`;
+        const runInMeters = riseM * 12;
+        if (runInMeters > 9 || riseM > 0.762) {
+            out += `<br><span style="color:var(--text-warning);"><strong>Notice:</strong> ADA-style guidance limits a ramp run to about 9 m and rise to about 0.762 m before a level landing is required. Verify your local code.</span>`;
         }
         res.innerHTML = out;
     }
@@ -952,7 +990,8 @@ function initAreaToDim() {
         const area = parseFloat(valInput.value);
         const shape = shapeSelect.value;
         const resultEl = document.getElementById('area-to-dim-result');
-        const unit = document.getElementById('area-to-dim-unit').options[document.getElementById('area-to-dim-unit').selectedIndex].text;
+        const areaUnit = document.getElementById('area-to-dim-unit').value;
+        const baseUnit = { m2: 'm', cm2: 'cm', mm2: 'mm', ft2: 'ft', in2: 'in' }[areaUnit] || 'm';
         
         ratioRow.style.display = shape === 'rectangle' ? 'flex' : 'none';
 
@@ -962,8 +1001,6 @@ function initAreaToDim() {
         }
 
         let output = '';
-        let baseUnit = unit.replace('Square ', '').replace('m²', 'm').replace('cm²', 'cm').replace('ft²', 'ft').replace('in²', 'in');
-
         switch (shape) {
             case 'circle': {
                 const r = Math.sqrt(area / Math.PI);
@@ -991,15 +1028,19 @@ function initAreaToDim() {
                 break;
             }
             case 'rectangle': {
-                const ratioStr = ratioInput.value || '1:1';
-                let wRatio = 1, hRatio = 1;
+                const ratioStr = ratioInput.value.trim();
+                let wRatio, hRatio;
                 if (ratioStr.includes(':')) {
-                    const parts = ratioStr.split(':');
-                    wRatio = parseFloat(parts[0]) || 1;
-                    hRatio = parseFloat(parts[1]) || 1;
+                    const parts = ratioStr.split(':').map(part => parseFloat(part.trim()));
+                    [wRatio, hRatio] = parts;
                 } else {
-                    wRatio = parseFloat(ratioStr) || 1;
+                    wRatio = parseFloat(ratioStr);
                     hRatio = 1;
+                }
+
+                if (!validPositive(wRatio) || !validPositive(hRatio)) {
+                    resultEl.querySelector('.result-text').textContent = 'Enter a valid positive ratio such as 1:2';
+                    return;
                 }
                 
                 // area = w * h = (wRatio * x) * (hRatio * x) = wRatio * hRatio * x^2
@@ -1034,38 +1075,66 @@ function initTriangleSolver() {
     const result = document.getElementById('triangle-result');
     if (!base) return;
 
-    const calculate = (e) => {
+    const calculate = (event) => {
         let b = parseFloat(base.value);
         let h = parseFloat(height.value);
         let hy = parseFloat(hyp.value);
         let a = parseFloat(angle.value);
         
         let valid = 0;
-        if (!isNaN(b)) valid++;
-        if (!isNaN(h)) valid++;
-        if (!isNaN(hy)) valid++;
-        if (!isNaN(a)) valid++;
+        if (validPositive(b)) valid++;
+        if (validPositive(h)) valid++;
+        if (validPositive(hy)) valid++;
+        if (Number.isFinite(a) && a > 0 && a < 90) valid++;
 
-        if (valid < 2 && e && e.target !== clear) return;
+        if (valid < 2) {
+            result.querySelector('.result-text').textContent = 'Enter two valid positive values (angle must be 0°–90°)';
+            return;
+        }
 
-        if (!isNaN(b) && !isNaN(h)) {
-            hy = Math.sqrt(b*b + h*h);
-            a = Math.atan2(h, b) * (180 / Math.PI);
-        } else if (!isNaN(b) && !isNaN(hy)) {
-            h = Math.sqrt(hy*hy - b*b);
-            a = Math.atan2(h, b) * (180 / Math.PI);
-        } else if (!isNaN(h) && !isNaN(hy)) {
-            b = Math.sqrt(hy*hy - h*h);
-            a = Math.atan2(h, b) * (180 / Math.PI);
-        } else if (!isNaN(b) && !isNaN(a)) {
-            h = b * Math.tan(a * Math.PI / 180);
-            hy = b / Math.cos(a * Math.PI / 180);
-        } else if (!isNaN(h) && !isNaN(a)) {
-            b = h / Math.tan(a * Math.PI / 180);
-            hy = h / Math.sin(a * Math.PI / 180);
-        } else if (!isNaN(hy) && !isNaN(a)) {
-            b = hy * Math.cos(a * Math.PI / 180);
-            h = hy * Math.sin(a * Math.PI / 180);
+        const edited = event?.target?.id;
+        const pairOrder = {
+            'triangle-base': ['base-height', 'base-hyp', 'base-angle'],
+            'triangle-height': ['base-height', 'height-hyp', 'height-angle'],
+            'triangle-hyp': ['base-hyp', 'height-hyp', 'hyp-angle'],
+            'triangle-angle': ['base-angle', 'height-angle', 'hyp-angle']
+        }[edited] || ['base-height', 'base-hyp', 'height-hyp', 'base-angle', 'height-angle', 'hyp-angle'];
+
+        let solved = false;
+        for (const pair of pairOrder) {
+            if (pair === 'base-height' && validPositive(b) && validPositive(h)) {
+                hy = Math.sqrt(b * b + h * h);
+                a = Math.atan2(h, b) * (180 / Math.PI);
+                solved = true;
+            } else if (pair === 'base-hyp' && validPositive(b) && validPositive(hy)) {
+                if (hy <= b) continue;
+                h = Math.sqrt(hy * hy - b * b);
+                a = Math.atan2(h, b) * (180 / Math.PI);
+                solved = true;
+            } else if (pair === 'height-hyp' && validPositive(h) && validPositive(hy)) {
+                if (hy <= h) continue;
+                b = Math.sqrt(hy * hy - h * h);
+                a = Math.atan2(h, b) * (180 / Math.PI);
+                solved = true;
+            } else if (pair === 'base-angle' && validPositive(b) && Number.isFinite(a) && a > 0 && a < 90) {
+                h = b * Math.tan(a * Math.PI / 180);
+                hy = b / Math.cos(a * Math.PI / 180);
+                solved = true;
+            } else if (pair === 'height-angle' && validPositive(h) && Number.isFinite(a) && a > 0 && a < 90) {
+                b = h / Math.tan(a * Math.PI / 180);
+                hy = h / Math.sin(a * Math.PI / 180);
+                solved = true;
+            } else if (pair === 'hyp-angle' && validPositive(hy) && Number.isFinite(a) && a > 0 && a < 90) {
+                b = hy * Math.cos(a * Math.PI / 180);
+                h = hy * Math.sin(a * Math.PI / 180);
+                solved = true;
+            }
+            if (solved) break;
+        }
+
+        if (!solved || !validPositive(b) || !validPositive(h) || !validPositive(hy) || !Number.isFinite(a) || a <= 0 || a >= 90) {
+            result.querySelector('.result-text').textContent = 'The entered values do not form a valid right triangle';
+            return;
         }
         
         if (valid >= 2) {
@@ -1080,11 +1149,12 @@ function initTriangleSolver() {
             result.querySelector('.result-text').innerHTML = 
                 `Base: ${fmt(b)} | Height: ${fmt(h)} | Hypotenuse: ${fmt(hy)}<br>` + 
                 `Angle: ${fmt(a)}° | Slope: ${fmt(slope)}% | Pitch: 1 in ${fmt(1/pitch)} | ${fmt(h*12/b)}:12`;
-            addHistory('Triangle Solver', `${fmt(b)}, ${fmt(h)}`, `Hyp: ${fmt(hy)}`);
+            addToHistory('Triangle Solver', `${fmt(b)}, ${fmt(h)}`, '', `Hyp: ${fmt(hy)}`, '');
         }
     };
 
     [base, height, hyp, angle].forEach(el => {
+        el.addEventListener('input', calculate);
         el.addEventListener('change', calculate);
     });
 
@@ -1113,7 +1183,10 @@ function initPerimeterCalc() {
         const v1 = parseFloat(dim1.value);
         const v2 = parseFloat(dim2.value);
         const u = unit.value;
-        if (isNaN(v1)) return;
+        if (!validPositive(v1)) {
+            result.querySelector('.result-text').textContent = 'Enter a valid positive dimension';
+            return;
+        }
 
         let p = 0;
         let out = '';
@@ -1130,7 +1203,10 @@ function initPerimeterCalc() {
                 break;
             }
             case 'rectangle': {
-                if (isNaN(v2)) return;
+                if (!validPositive(v2)) {
+                    result.querySelector('.result-text').textContent = 'Enter a valid positive width';
+                    return;
+                }
                 p = 2 * (v1 + v2);
                 out = `Perimeter = ${fmt(p)} ${u}`;
                 break;
@@ -1141,7 +1217,10 @@ function initPerimeterCalc() {
                 break;
             }
             case 'polygon': {
-                if (isNaN(v2)) return;
+                if (!Number.isInteger(v1) || v1 < 3 || !validPositive(v2)) {
+                    result.querySelector('.result-text').textContent = 'A polygon needs at least 3 sides and a positive side length';
+                    return;
+                }
                 p = v1 * v2;
                 out = `Perimeter = ${fmt(p)} ${u}`;
                 break;
@@ -1149,7 +1228,7 @@ function initPerimeterCalc() {
         }
         
         result.querySelector('.result-text').textContent = out;
-        addHistory('Perimeter', `${s} (${v1}${u})`, out);
+        addToHistory('Perimeter', `${s} (${v1} ${u})`, '', out, '');
     };
 
     shape.addEventListener('change', () => {
@@ -1190,8 +1269,11 @@ function initStairCalc() {
 
     const calculate = () => {
         const totalRise = parseFloat(rise.value);
-        const targetRiser = parseFloat(target.value) || 180;
-        if (isNaN(totalRise)) return;
+        const targetRiser = parseFloat(target.value);
+        if (!validPositive(totalRise) || !validPositive(targetRiser)) {
+            result.textContent = 'Enter a positive total rise and target riser height';
+            return;
+        }
 
         let m = 1;
         if (unit.value === 'cm') m = 10;
@@ -1201,7 +1283,7 @@ function initStairCalc() {
         
         const targetRiserMM = targetRiser * m;
         const totalRiseMM = totalRise * m;
-        let steps = Math.round(totalRiseMM / targetRiserMM);
+        let steps = Math.ceil(totalRiseMM / targetRiserMM);
         if (steps < 1) steps = 1;
         
         const actualRiserMM = totalRiseMM / steps;
@@ -1213,13 +1295,17 @@ function initStairCalc() {
         
         const u = unit.value;
         
+        const warnings = actualRiserMM < 150 || actualRiserMM > 190 || treadMM < 250 || treadMM > 300
+            ? '<br><span style="color:var(--text-warning);"><strong>Check:</strong> Result is outside common preliminary stair ranges (riser 150–190 mm, tread 250–300 mm). Verify local code.</span>'
+            : '';
+
         result.innerHTML = `
             <strong>Number of Risers (Steps):</strong> ${steps}<br>
             <strong>Actual Riser Height:</strong> ${fmt(actualRiserOut)} ${u}<br>
-            <strong>Recommended Tread Depth:</strong> ${fmt(treadOut)} ${u} (based on 2R+T rule)<br>
-            <strong>Total Run (Staircase Length):</strong> ${fmt(totalRun)} ${u}
+            <strong>Recommended Tread Depth:</strong> ${fmt(treadOut)} ${u} (based on 2R+T = 615 mm)<br>
+            <strong>Total Run (Staircase Length):</strong> ${fmt(totalRun)} ${u}${warnings}
         `;
-        addHistory('Stair Calculator', `Rise: ${totalRise}${u}`, `${steps} steps`);
+        addToHistory('Stair Calculator', `Rise: ${totalRise} ${u}`, '', `${steps} risers`, '');
     };
 
     [rise, target, unit].forEach(el => {
@@ -1244,26 +1330,18 @@ function initTileCalc() {
         const a = parseFloat(area.value);
         const w = parseFloat(width.value);
         const l = parseFloat(length.value);
-        const g = parseFloat(grout.value) || 0;
-        const ws = parseFloat(waste.value) || 0;
+        const g = parseFloat(grout.value);
+        const ws = parseFloat(waste.value);
         const b = parseFloat(box.value);
         
-        if (isNaN(a) || isNaN(w) || isNaN(l)) return;
+        if (!validPositive(a) || !validPositive(w) || !validPositive(l) || !Number.isFinite(g) || g < 0 || !Number.isFinite(ws) || ws < 0 || (Number.isFinite(b) && b <= 0)) {
+            result.querySelector('.result-text').textContent = 'Enter positive area and tile dimensions; waste and grout cannot be negative';
+            return;
+        }
         
-        let areaM2 = a;
-        if (areaUnit.value === 'cm2') areaM2 = a / 10000;
-        else if (areaUnit.value === 'mm2') areaM2 = a / 1000000;
-        else if (areaUnit.value === 'ft2') areaM2 = a * 0.092903;
-        else if (areaUnit.value === 'in2') areaM2 = a * 0.00064516;
-        
-        let m = 0.001;
-        if (dimUnit.value === 'cm') m = 0.01;
-        else if (dimUnit.value === 'm') m = 1;
-        else if (dimUnit.value === 'in') m = 0.0254;
-        else if (dimUnit.value === 'ft') m = 0.3048;
-        
-        const tileW = (w + g) * m;
-        const tileL = (l + g) * m;
+        const areaM2 = convert('area', a, areaUnit.value, 'm2');
+        const tileW = convert('length', w, dimUnit.value, 'm') + convert('length', g, dimUnit.value, 'm');
+        const tileL = convert('length', l, dimUnit.value, 'm') + convert('length', g, dimUnit.value, 'm');
         const tileAreaM2 = tileW * tileL;
         
         const rawTiles = areaM2 / tileAreaM2;
@@ -1276,7 +1354,7 @@ function initTileCalc() {
         }
         
         result.querySelector('.result-text').innerHTML = out;
-        addHistory('Tile Estimator', `${a}${areaUnit.value}`, `${totalTiles} tiles`);
+        addToHistory('Tile Estimator', `${a} ${areaUnit.value}`, '', `${totalTiles} tiles`, '');
     };
 
     [area, areaUnit, width, length, dimUnit, grout, waste, box].forEach(el => {
@@ -1301,38 +1379,35 @@ function initBrickCalc() {
     const calculate = () => {
         const a = parseFloat(area.value);
         const t = type.value;
-        const mort = parseFloat(mortar.value) || 0;
-        const ws = parseFloat(waste.value) || 0;
+        const mort = parseFloat(mortar.value);
+        const ws = parseFloat(waste.value);
         const wt = wallType.value;
-        if (isNaN(a)) return;
+        if (!validPositive(a) || !Number.isFinite(mort) || mort < 0 || !Number.isFinite(ws) || ws < 0) {
+            result.querySelector('.result-text').textContent = 'Enter a positive wall area; mortar and waste cannot be negative';
+            return;
+        }
         
-        let areaM2 = a;
-        if (areaUnit.value === 'cm2') areaM2 = a / 10000;
-        else if (areaUnit.value === 'mm2') areaM2 = a / 1000000;
-        else if (areaUnit.value === 'ft2') areaM2 = a * 0.092903;
-        else if (areaUnit.value === 'in2') areaM2 = a * 0.00064516;
+        const areaM2 = convert('area', a, areaUnit.value, 'm2');
         
         let bw = 215, bh = 65;
         let dimToMeters = 0.001; 
         
         if (t === 'block') { bw = 440; bh = 215; }
         else if (t === 'custom') {
-            const parts = customDim.value.split('x');
-            if (parts.length === 2) {
-                bw = parseFloat(parts[0]) || bw;
-                bh = parseFloat(parts[1]) || bh;
+            const parts = customDim.value.split(/[x×]/i).map(part => parseFloat(part.trim()));
+            if (parts.length !== 2 || !validPositive(parts[0]) || !validPositive(parts[1])) {
+                result.querySelector('.result-text').textContent = 'Enter custom brick dimensions like 215x65';
+                return;
             }
-            if (dimUnit.value === 'cm') dimToMeters = 0.01;
-            else if (dimUnit.value === 'm') dimToMeters = 1;
-            else if (dimUnit.value === 'in') dimToMeters = 0.0254;
-            else if (dimUnit.value === 'ft') dimToMeters = 0.3048;
+            [bw, bh] = parts;
+            dimToMeters = units.length[dimUnit.value]?.factor || 0;
+            if (!dimToMeters) {
+                result.querySelector('.result-text').textContent = 'Select a valid dimension unit';
+                return;
+            }
         }
         
-        let mortDimToMeters = 0.001;
-        if (dimUnit.value === 'cm') mortDimToMeters = 0.01;
-        if (dimUnit.value === 'm') mortDimToMeters = 1;
-        if (dimUnit.value === 'in') mortDimToMeters = 0.0254;
-        if (dimUnit.value === 'ft') mortDimToMeters = 0.3048;
+        const mortDimToMeters = units.length[dimUnit.value]?.factor || 0;
         
         if (t !== 'custom') {
             bw = bw * 0.001;
@@ -1354,7 +1429,7 @@ function initBrickCalc() {
             <strong>Total Bricks/Blocks Needed:</strong> ${totalBricks}<br>
             <span style="font-size: 0.9em; opacity: 0.8;">(Includes ${ws}% waste margin)</span>
         `;
-        addHistory('Brick Calculator', `${a}${areaUnit.value}`, `${totalBricks} units`);
+        addToHistory('Brick Calculator', `${a} ${areaUnit.value}`, '', `${totalBricks} units`, '');
     };
 
     type.addEventListener('change', () => {
@@ -1379,21 +1454,23 @@ function initPaintCalc() {
     if (!area) return;
 
     const calculate = () => {
-        let a = parseFloat(area.value);
-        let s = parseFloat(subtract.value) || 0;
-        let c = parseFloat(coats.value) || 1;
-        let cov = parseFloat(coverage.value) || 10;
-        
-        if (isNaN(a)) return;
-        
-        let netArea = a - s;
-        if (netArea < 0) netArea = 0;
-        
-        const totalAreaToPaint = netArea * c;
-        let totalVolume = totalAreaToPaint / cov;
-        
-        result.querySelector('.result-text').textContent = `Total Paint Needed = ${fmt(totalVolume)} ${outUnit.value}`;
-        addHistory('Paint Estimator', `${netArea}${unit.value}`, `${fmt(totalVolume)} ${outUnit.value}`);
+        const a = parseFloat(area.value);
+        const s = parseFloat(subtract.value);
+        const c = parseFloat(coats.value);
+        const cov = parseFloat(coverage.value);
+
+        if (!validPositive(a) || !Number.isFinite(s) || s < 0 || !validPositive(c) || !validPositive(cov)) {
+            result.querySelector('.result-text').textContent = 'Enter positive area, coats, and coverage; openings cannot be negative';
+            return;
+        }
+
+        const netAreaM2 = Math.max(0, convert('area', a, unit.value, 'm2') - convert('area', s, unit.value, 'm2'));
+        const litres = (netAreaM2 * c) / cov;
+        const totalVolume = outUnit.value === 'gal' ? litres / US_GALLON_LITERS : litres;
+        const outputLabel = outUnit.value === 'gal' ? 'US gal' : 'L';
+
+        result.querySelector('.result-text').textContent = `Total Paint Needed = ${fmt(totalVolume)} ${outputLabel}`;
+        addToHistory('Paint Estimator', `${fmt(netAreaM2)} m²`, '', `${fmt(totalVolume)} ${outputLabel}`, '');
     };
 
     [area, unit, subtract, coats, coverage, outUnit].forEach(el => {
@@ -1413,27 +1490,27 @@ function initVolWeightCalc() {
 
     const calculate = () => {
         const v = parseFloat(val.value);
-        if (isNaN(v)) return;
+        if (!validPositive(v)) {
+            result.querySelector('.result-text').textContent = 'Enter a positive volume';
+            return;
+        }
         
         let density = 1000;
         if (material.value === 'custom') {
-            density = parseFloat(customVal.value) || 1000;
+            density = parseFloat(customVal.value);
         } else {
             density = parseFloat(material.value);
         }
-        
-        let m3 = v;
+        if (!validPositive(density)) {
+            result.querySelector('.result-text').textContent = 'Enter a positive custom density';
+            return;
+        }
+
         const u = unit.value;
-        if (u === 'L') m3 = v / 1000;
-        else if (u === 'cm3') m3 = v / 1000000;
-        else if (u === 'mm3') m3 = v / 1000000000;
-        else if (u === 'ft3') m3 = v * 0.0283168;
-        else if (u === 'in3') m3 = v * 0.0000163871;
-        else if (u === 'yd3') m3 = v * 0.764555;
-        
+        const m3 = convert('volume', v, u, 'm3');
         const weightKg = m3 * density;
         const weightTonnes = weightKg / 1000;
-        const weightLbs = weightKg * 2.20462;
+        const weightLbs = weightKg / 0.45359237;
         
         result.querySelector('.result-text').innerHTML = `
             <strong>Weight:</strong><br>
@@ -1441,7 +1518,7 @@ function initVolWeightCalc() {
             ${fmt(weightTonnes)} Tonnes<br>
             ${fmt(weightLbs)} lbs
         `;
-        addHistory('Vol to Weight', `${v} ${u}`, `${fmt(weightKg)} kg`);
+        addToHistory('Vol to Weight', `${v} ${unitLabel(u)}`, '', `${fmt(weightKg)} kg`, '');
     };
 
     material.addEventListener('change', () => {
@@ -1454,4 +1531,3 @@ function initVolWeightCalc() {
         el.addEventListener('change', calculate);
     });
 }
-

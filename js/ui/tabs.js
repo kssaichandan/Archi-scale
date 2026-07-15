@@ -5,10 +5,24 @@ export function initTabs() {
     const sidebar = document.getElementById('sidebar');
     const hamburger = document.getElementById('hamburger');
 
+    if (!sidebar || !hamburger) return;
+
     // Create overlay for mobile
     const overlay = document.createElement('div');
     overlay.className = 'sidebar-overlay';
     document.body.appendChild(overlay);
+
+    const closeSidebar = () => {
+        sidebar.classList.remove('open');
+        overlay.classList.remove('show');
+        hamburger.setAttribute('aria-expanded', 'false');
+    };
+
+    const openSidebar = () => {
+        sidebar.classList.add('open');
+        overlay.classList.add('show');
+        hamburger.setAttribute('aria-expanded', 'true');
+    };
 
     navItems.forEach(item => {
         item.addEventListener('click', () => {
@@ -30,19 +44,20 @@ export function initTabs() {
             }
 
             // Close mobile sidebar
-            sidebar.classList.remove('open');
-            overlay.classList.remove('show');
+            closeSidebar();
         });
     });
 
     // Hamburger menu
-    hamburger.addEventListener('click', () => {
-        sidebar.classList.toggle('open');
-        overlay.classList.toggle('show');
+    hamburger.setAttribute('aria-expanded', 'false');
+    hamburger.setAttribute('aria-controls', 'sidebar');
+    hamburger.addEventListener('click', (event) => {
+        event.stopPropagation();
+        sidebar.classList.contains('open') ? closeSidebar() : openSidebar();
     });
 
-    overlay.addEventListener('click', () => {
-        sidebar.classList.remove('open');
-        overlay.classList.remove('show');
+    overlay.addEventListener('click', closeSidebar);
+    document.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape') closeSidebar();
     });
 }

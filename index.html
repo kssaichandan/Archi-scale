@@ -13,7 +13,7 @@
 <body>
     <header class="header">
         <div class="header-left">
-            <button class="hamburger" id="hamburger" aria-label="Toggle menu">
+            <button class="hamburger" id="hamburger" aria-label="Toggle menu" aria-controls="sidebar" aria-expanded="false">
                 <span></span><span></span><span></span>
             </button>
             <h1 class="logo">📐 Archi-Scale</h1>
@@ -1244,8 +1244,8 @@
                             <input type="number" class="input-value" id="paint-coats" placeholder="e.g. 2" value="2" step="any">
                         </div>
                         <div class="input-group" style="width: 100%;">
-                            <label>Coverage (per Liter/Gallon)</label>
-                            <input type="number" class="input-value" id="paint-coverage" placeholder="e.g. 10 (m²/L)" value="10" step="any" style="width: 100%;">
+                            <label>Coverage (m² per Liter)</label>
+                            <input type="number" class="input-value" id="paint-coverage" placeholder="e.g. 10" value="10" min="0.001" step="any" style="width: 100%;">
                         </div>
                         <div class="input-group">
                             <label>Volume Unit Output</label>

@@ -32,7 +32,7 @@ export const units = {
         m3:   { factor: 1,           name: 'm³',   abbr: 'm³' },
         L:    { factor: 0.001,       name: 'Liters', abbr: 'L' },
         mL:   { factor: 0.000001,    name: 'Milliliters', abbr: 'mL' },
-        gal:  { factor: 0.00378541,  name: 'Gallons (US)', abbr: 'gal' },
+        gal:  { factor: 0.003785411784,  name: 'Gallons (US)', abbr: 'gal' },
         in3:  { factor: 0.000016387064, name: 'in³', abbr: 'in³' },
         ft3:  { factor: 0.028316846592, name: 'ft³', abbr: 'ft³' },
         yd3:  { factor: 0.764554857984, name: 'yd³', abbr: 'yd³' },
@@ -62,7 +62,7 @@ export const units = {
         kgm3:  { factor: 1,         name: 'kg/m³',  abbr: 'kg/m³' },
         gcm3:  { factor: 1000,      name: 'g/cm³',  abbr: 'g/cm³' },
         lbft3: { factor: 16.0184634, name: 'lb/ft³', abbr: 'lb/ft³' },
-        lbin3: { factor: 27679.9047, name: 'lb/in³', abbr: 'lb/in³' },
+        lbin3: { factor: 27679.9047102, name: 'lb/in³', abbr: 'lb/in³' },
     },
     // ANGLE - base: degrees
     angle: {
@@ -96,6 +96,7 @@ export const units = {
 };
 
 export function convert(category, value, fromUnit, toUnit) {
+    if (!Number.isFinite(value)) return NaN;
     if (category === 'temperature') {
         return convertTemperature(value, fromUnit, toUnit);
     }
@@ -105,6 +106,10 @@ export function convert(category, value, fromUnit, toUnit) {
 }
 
 function convertTemperature(value, from, to) {
+    if (!Number.isFinite(value)) return NaN;
+    if (from === 'K' && value < 0) return NaN;
+    if (from === 'C' && value < -273.15) return NaN;
+    if (from === 'F' && value < -459.67) return NaN;
     if (from === to) return value;
     // Convert to Celsius first
     let celsius;
@@ -113,6 +118,7 @@ function convertTemperature(value, from, to) {
         case 'F': celsius = (value - 32) * 5/9; break;
         case 'K': celsius = value - 273.15; break;
     }
+    if (!Number.isFinite(celsius) || celsius < -273.15) return NaN;
     // Convert from Celsius to target
     switch (to) {
         case 'C': return celsius;
